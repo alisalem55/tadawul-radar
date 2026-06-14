@@ -81,7 +81,7 @@ st.markdown("""
     <div class='premium-header'>
         <div style='text-align: right;'>
             <span style='color: #ffffff; font-size: 28px; font-weight: 900;'>⚡ رادار تداول الكمي المطور | ELITE TRADING DECK</span>
-            <p style='color: #ffffff; font-size: 15px; font-weight: bold; margin: 6px 0 0 0;'>محطة التحليل الفني المفرزة حسب قوة الإشارة والمؤشرات الـ 8 لـ 70 شركة سعودية كبرى</p>
+            <p style='color: #ffffff; font-size: 15px; font-weight: bold; margin: 6px 0 0 0;'>محطة التحليل الفني بالأسعار اللحظية وقوة الإشارة الصريحة (8/8) لـ 70 شركة سعودية قيادية</p>
         </div>
     </div>
 """, unsafe_allow_html=True)
@@ -247,10 +247,9 @@ if user_password == PASSWORD_SECRET:
         price_val = stock['price']
         sl_val = stock['sl']
         
-        # حساب قوة الإشارة بالنسبة المئوية المباشرة بناءً على دقة الـ 8 مؤشرات الفنية المكتملة
-        signal_strength = (stock['score'] / 8) * 100
+        # إعادة صياغة قوة الإشارة الرقمية بنظام الكسور الصريحة المباشرة (X/8)
+        signal_strength_text = f"{stock['score']}/8"
 
-        # بناء الجدول المكتمل بالأسعار الحقيقية بعد إلغاء الكميات والسيولة ودمج عمود قوة الإشارة صراحة
         stock_entry = {
             "رمز السهم": stock['symbol'], 
             "اسم الشركة": stock['name'],
@@ -261,7 +260,7 @@ if user_password == PASSWORD_SECRET:
             "الهدف الأول": f"{stock['t1']:.2f} ريال", 
             "الهدف الثاني": f"{stock['t2']:.2f} ريال", 
             "وقف الخسارة": f"{sl_val:.2f} ريال",
-            "قوة الإشارة": f"{signal_strength:.1f}%",
+            "قوة الإشارة": signal_strength_text,
             "الالنقاط الفنية": stock['score'], 
             "التوصية النهائية": stock['rec']
         }
@@ -280,15 +279,12 @@ if user_password == PASSWORD_SECRET:
 
     if not df_all.empty:
         df_all = df_all.sort_values(by="الالنقاط الفنية", ascending=False)
-        df_all["الالنقاط الفنية"] = df_all["الالنقاط الفنية"].apply(lambda x: f"{x}/8")
 
     if not df_elite.empty:
         df_elite = df_elite.sort_values(by="الالنقاط الفنية", ascending=False)
-        df_elite["الالنقاط الفنية"] = df_elite["الالنقاط الفنية"].apply(lambda x: f"{x}/8")
 
     if not df_passed.empty:
         df_passed = df_passed.sort_values(by="الالنقاط الفنية", ascending=False)
-        df_passed["الالنقاط الفنية"] = df_passed["الالنقاط الفنية"].apply(lambda x: f"{x}/8")
 
     market_sentiment = (buy_count / len(all_rows)) * 100 if all_rows else 0
     # --- عرض بطاقات الأداء الإحصائي الرقمي المضيئة بالقمة ---
@@ -299,7 +295,7 @@ if user_password == PASSWORD_SECRET:
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # --- تنظيم جداول الصفقات المفرودة مع دمج "قوة الإشارة" و"التوصية النهائية" وإلغاء الكميات والسيولة ---
+    # --- تنظيم جداول الصفقات المفرودة مع إظهار قوة الإشارة الصريحة بنظام النقاط الحقيقية (X/8) ---
     st.markdown("<div class='trade-title'>🏆 رابعاً: صفقات النخبة الفائقة الذهبية (أسعار حقيقية مصفاة مع قوة الإشارة)</div>", unsafe_allow_html=True)
     if not df_elite.empty:
         st.dataframe(df_elite[["رمز السهم", "اسم الشركة", "السعر الحالي", "وقف الخسارة", "الهدف الأول", "الهدف الثاني", "قوة الإشارة", "التوصية النهائية"]], width="stretch", hide_index=True)
@@ -379,4 +375,4 @@ if user_password == PASSWORD_SECRET:
     if not df_all.empty:
         st.dataframe(df_all[["رمز السهم", "اسم الشركة", "التصنيف الشرعي", "السعر الحالي", "مؤشر RSI", "فيبوناتشي", "التوصية النهائية"]], width="stretch", hide_index=True)
 else:
-    st.warning("🔒 يرجى إدخال كلمة المرور الصحيحة في الحقل العلوي لفك تشفير وعرض بيانات الرادار الاستثماري عالي التباين.")
+    st.warning("🔒 يرجى إدخال كلمة المرور الصحيحة في الحقل العلوي لفك تشفير وعرض بيانات الرادار الاستثماري عالي التباين الحقيقي.")
