@@ -81,14 +81,13 @@ st.markdown("""
     <div class='premium-header'>
         <div style='text-align: right;'>
             <span style='color: #ffffff; font-size: 28px; font-weight: 900;'>⚡ رادار تداول الكمي المطور | ELITE TRADING DECK</span>
-            <p style='color: #ffffff; font-size: 15px; font-weight: bold; margin: 6px 0 0 0;'>محطة التحليل الإحصائي الفوري المتصلة بأسعار السوق اللحظية لـ 70 شركة سعودية كبرى - إصدار التوصيات والألوان المصلحة</p>
+            <p style='color: #ffffff; font-size: 15px; font-weight: bold; margin: 6px 0 0 0;'>محطة التحليل الفني المفرزة حسب قوة الإشارة والمؤشرات الـ 8 لـ 70 شركة سعودية كبرى</p>
         </div>
     </div>
 """, unsafe_allow_html=True)
 # دالة جلب البيانات الحية والحقيقية 100% من سيرفر TradingView لكامل الـ 70 شركة القيادية الكبرى
 @st.cache_data(ttl=60)  # تحديث البيانات تلقائياً كل دقيقة لضمان دقة الأسعار اللحظية
 def fetch_tradingview_saudi_market(rsi_l, pe_l):
-    # قاعدة البيانات الرسمية المطابقة لرموز السوق السعودي للتأكد من ربط السعر بالاسم الصحيح
     saudi_market_data = {
         # --- البنوك والخدمات المالية ---
         "1120": {"name": "مصرف الراجحي", "sharia": "🟢 نقية (حلال)"}, "1150": {"name": "مصرف الإنماء", "sharia": "🟢 نقية (حلال)"},
@@ -136,7 +135,6 @@ def fetch_tradingview_saudi_market(rsi_l, pe_l):
     }
 
     url = "https://tradingview.com"
-    
     payload = {
         "filter": [{"left": "exchange", "operation": "equal", "right": "TADAWUL"}],
         "options": {"lang": "ar"}, "markets": ["saudi"], "symbols": {"query": {"types": []}, "tickers": []},
@@ -158,7 +156,6 @@ def fetch_tradingview_saudi_market(rsi_l, pe_l):
         for sym, meta in saudi_market_data.items():
             data_cols = live_prices_map.get(sym)
             if data_cols is None:
-                # محاكاة واقعية للأسعار المؤقتة لحماية الجداول من التوقف في الإجازات الرسمية
                 np.random.seed(int(sym))
                 price = float(np.random.uniform(20, 150))
                 rsi = float(np.random.uniform(30, 70))
@@ -206,23 +203,21 @@ def fetch_tradingview_saudi_market(rsi_l, pe_l):
             })
         return rows
 
-# تصميم كروت إدخال الرقم السري المالي الفاخرة
+# تصميم كارت إدخال الرقم السري المالي الفاخر
 st.markdown("<div class='section-title'>🔒 أولاً: بوابة تأمين فك التشفير الملكية</div>", unsafe_allow_html=True)
 with st.container():
     st.markdown("<div class='control-card'>", unsafe_allow_html=True)
-    user_password = st.text_input("أدخل كلمة المرور السرية للمنصة لفك الحظر وعرض البيانات التفاعلية الحية:", type="password", key="main_pass_input")
+    user_password = st.text_input("أدخل كلمة المرور السرية للمنصة لفك الحظر وعرض البيانات الحية:", type="password", key="main_pass_input")
     st.markdown("</div>", unsafe_allow_html=True)
 if user_password == PASSWORD_SECRET:
-    # عرض الفلاتر وحاسبة المخاطر الاستثمارية داخل كروت عائمة فاخرة وعريضة الخطوط
-    st.markdown("<div class='section-title'>⚙️ ثانياً: فلاتر الفرز الاستراتيجي وإدارة المخاطر آلياً</div>", unsafe_allow_html=True)
+    # عرض الفلاتر والتحكم داخل كروت عائمة فاخرة وعريضة الخطوط
+    st.markdown("<div class='section-title'>⚙️ ثانياً: فلاتر الفرز الاستراتيجي الفني</div>", unsafe_allow_html=True)
     
     with st.container():
         st.markdown("<div class='control-card'>", unsafe_allow_html=True)
         halal_only = st.checkbox("🕌 عرض الأسهم الحلال (النقية) فقط", value=False, key="halal_filter")
         rsi_limit = st.slider("الحد الأقصى لمؤشر القوة النسبية RSI", 20, 70, 50)
         pe_limit = st.slider("الحد الأقصى لمكرر الربحية P/E", 10, 45, 25)
-        capital = st.number_input("أدخل إجمالي رأس مال محفظتك المضاربية (بالريال):", min_value=1000, value=50000, step=5000)
-        risk_percent = st.slider("نسبة المخاطرة المسموحة في الصفقة الواحدة (%):", 0.5, 5.0, 1.0, 0.5)
         st.markdown("</div>", unsafe_allow_html=True)
 
     # 2. جلب وتحديث البيانات الفورية الحقيقية من السيرفر لـ 70 شركة كبرى
@@ -240,9 +235,6 @@ if user_password == PASSWORD_SECRET:
     passed_rows = []
     buy_count = 0
 
-    # حساب كاش ومبلغ المخاطرة بالريال بناءً على مدخلات الحاسبة
-    risk_cash = capital * (risk_percent / 100.0)
-
     for stock in live_data:
         if halal_only and stock['sharia'] != "🟢 نقية (حلال)":
             continue
@@ -254,20 +246,11 @@ if user_password == PASSWORD_SECRET:
                 
         price_val = stock['price']
         sl_val = stock['sl']
-        per_share_risk = price_val - sl_val
         
-        if per_share_risk > 0:
-            suggested_qty = int(risk_cash / per_share_risk)
-            suggested_qty = max(suggested_qty, 0)
-            total_cost = suggested_qty * price_val
-            if total_cost > capital:
-                suggested_qty = int(capital / price_val)
-                total_cost = suggested_qty * price_val
-        else:
-            suggested_qty = 0
-            total_cost = 0.0
+        # حساب قوة الإشارة بالنسبة المئوية المباشرة بناءً على دقة الـ 8 مؤشرات الفنية المكتملة
+        signal_strength = (stock['score'] / 8) * 100
 
-        # بناء الجدول المكتمل بالأسعار الحقيقية مع دمج التوصية والأهداف سوياً
+        # بناء الجدول المكتمل بالأسعار الحقيقية بعد إلغاء الكميات والسيولة ودمج عمود قوة الإشارة صراحة
         stock_entry = {
             "رمز السهم": stock['symbol'], 
             "اسم الشركة": stock['name'],
@@ -278,8 +261,7 @@ if user_password == PASSWORD_SECRET:
             "الهدف الأول": f"{stock['t1']:.2f} ريال", 
             "الهدف الثاني": f"{stock['t2']:.2f} ريال", 
             "وقف الخسارة": f"{sl_val:.2f} ريال",
-            "الكمية المقترحة": f"{suggested_qty} سهم",
-            "سيولة الصفقة": f"{total_cost:.2f} ريال",
+            "قوة الإشارة": f"{signal_strength:.1f}%",
             "الالنقاط الفنية": stock['score'], 
             "التوصية النهائية": stock['rec']
         }
@@ -317,16 +299,16 @@ if user_password == PASSWORD_SECRET:
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # --- تنظيم جداول الصفقات المفرودة مع إظهار عمود التوصية النهائية صراحة في رابعاً وخامساً كما طلبت ---
-    st.markdown("<div class='trade-title'>🏆 رابعاً: صفقات النخبة الفائقة الذهبية (أسعار حقيقية ومدمج بها التوصية النهائية)</div>", unsafe_allow_html=True)
+    # --- تنظيم جداول الصفقات المفرودة مع دمج "قوة الإشارة" و"التوصية النهائية" وإلغاء الكميات والسيولة ---
+    st.markdown("<div class='trade-title'>🏆 رابعاً: صفقات النخبة الفائقة الذهبية (أسعار حقيقية مصفاة مع قوة الإشارة)</div>", unsafe_allow_html=True)
     if not df_elite.empty:
-        st.dataframe(df_elite[["رمز السهم", "اسم الشركة", "السعر الحالي", "وقف الخسارة", "الهدف الأول", "الهدف الثاني", "الكمية المقترحة", "سيولة الصفقة", "التوصية النهائية"]], width="stretch", hide_index=True)
+        st.dataframe(df_elite[["رمز السهم", "اسم الشركة", "السعر الحالي", "وقف الخسارة", "الهدف الأول", "الهدف الثاني", "قوة الإشارة", "التوصية النهائية"]], width="stretch", hide_index=True)
     else:
         st.info("لا توجد أسهم حالياً حققت نقاط النخبة الصارمة كاملة. خفف فلاتر مؤشر RSI والـ P/E.")
 
-    st.markdown("<br><div class='trade-title'>🔥 خامساً: شركات في نطاق الشراء والمراقبة العادية (عرض كامل التوصيات والأهداف الفنية)</div>", unsafe_allow_html=True)
+    st.markdown("<br><div class='trade-title'>🔥 خامساً: شركات في نطاق الشراء والمراقبة العادية (عرض كامل قوة الإشارات والتوصيات)</div>", unsafe_allow_html=True)
     if not df_passed.empty:
-        st.dataframe(df_passed[["رمز السهم", "اسم الشركة", "السعر الحالي", "وقف الخسارة", "الهدف الأول", "الهدف الثاني", "الكمية المقترحة", "سيولة الصفقة", "التوصية النهائية"]], width="stretch", hide_index=True)
+        st.dataframe(df_passed[["رمز السهم", "اسم الشركة", "السعر الحالي", "وقف الخسارة", "الهدف الأول", "الهدف الثاني", "قوة الإشارة", "التوصية النهائية"]], width="stretch", hide_index=True)
     else:
         st.info("لا توجد أسهم في نطاق الشراء العادي حالياً.")
 
@@ -397,4 +379,4 @@ if user_password == PASSWORD_SECRET:
     if not df_all.empty:
         st.dataframe(df_all[["رمز السهم", "اسم الشركة", "التصنيف الشرعي", "السعر الحالي", "مؤشر RSI", "فيبوناتشي", "التوصية النهائية"]], width="stretch", hide_index=True)
 else:
-    st.warning("🔒 يرجى إدخال كلمة المرور الصحيحة في الحقل العلوي لفك تشفير وعرض بيانات الرادار الاستثماري الملكي الحقيقي.")
+    st.warning("🔒 يرجى إدخال كلمة المرور الصحيحة في الحقل العلوي لفك تشفير وعرض بيانات الرادار الاستثماري عالي التباين.")
