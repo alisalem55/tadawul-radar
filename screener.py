@@ -9,6 +9,10 @@ from plotly.subplots import make_subplots
 # 1. إعدادات الصفحة وهوية التداول الاحترافية فائقة الوضوح والتباين (Premium High-Contrast UI)
 st.set_page_config(page_title="رادار تداول الكمي للمحترفين Pro", page_icon="⚡", layout="wide")
 
+# تثبيت كلمة المرور الخاصة بك (يمكنك تغيير '1234' إلى أي رقم سري تحبه لحماية منصتك)
+PASSWORD_SECRET = "1234"
+
+# حقن ستايل CSS المطور لإجبار المنصة والسايدبار على اللون الأسود الحاد والنصوص البيضاء الناصعة
 st.markdown("""
     <style>
     .stApp { background-color: #000000; color: #ffffff; font-family: 'Segoe UI', sans-serif; text-align: right; direction: rtl; }
@@ -48,16 +52,16 @@ st.markdown("""
     <div class='premium-header'>
         <div style='display: flex; justify-content: space-between; align-items: center; flex-direction: row-reverse;'>
             <div style='text-align: right;'>
-                <span style='color: #ffffff; font-size: 30px; font-weight: 900;'>⚡ رادار تداول الكمي المطور | TADAWUL QUANT TERMINAL</span>
-                <p style='color: #ffffff; font-size: 15px; font-weight: bold; margin: 5px 0 0 0;'>محطة الفرز الفوري الموسعة والشاملة لـ 70 شركة من كبرى الشركات القيادية في البورصة السعودية</p>
+                <span style='color: #ffffff; font-size: 30px; font-weight: 900;'>⚡ محطة تداول الإحصائية المشفرة | TADAWUL TERMINAL SECURE</span>
+                <p style='color: #ffffff; font-size: 15px; font-weight: bold; margin: 5px 0 0 0;'>منصة المسح الفني لـ 70 شركة قيادية سعودية - النسخة المحمية من التلاعب والسرقة</p>
             </div>
             <div style='background: #000000; padding: 10px 20px; border-radius: 8px; font-size: 12px; color: #00ff00; font-weight: 900; border: 2px solid #ffffff;'>
-                إصدار الـ 70 شركة القيادية الكبرى
+                نظام القفل البرمجي نشط
             </div>
         </div>
     </div>
 """, unsafe_allow_html=True)
-# دالة جلب البيانات الموسعة لـ 70 شركة قيادية حقيقية ورسمية بالتصنيف الشرعي الصحيح
+# دالة جلب البيانات لـ 70 شركة قيادية حقيقية ورسمية بالتصنيف الشرعي الصحيح
 @st.cache_data(ttl=600)
 def fetch_tradingview_saudi_market(rsi_l, pe_l):
     saudi_market_data = {
@@ -139,193 +143,199 @@ def fetch_tradingview_saudi_market(rsi_l, pe_l):
         })
     return rows
 
-# لوحة التحكم الجانبية بالكامل بالالون عالية التباين
-st.sidebar.markdown("<h3 style='text-align: right; color: #ffffff;'>⚙️ فلاتر الفرز الفني</h3>", unsafe_allow_html=True)
-halal_only = st.sidebar.checkbox("🕌 عرض الأسهم الحلال (النقية) فقط", value=False, key="halal_filter")
-rsi_limit = st.sidebar.slider("الحد الأقصى لمؤشر القوة النسبية RSI", 20, 70, 50)
-pe_limit = st.sidebar.slider("الحد الأقصى لمكرر الربحية P/E", 10, 45, 25)
+# لوحة التحكم الجانبية الأمنية بالكامل
+st.sidebar.markdown("<h3 style='text-align: right; color: #ff0000;'>🔐 نظام القفل الأمني</h3>", unsafe_allow_html=True)
+user_password = st.sidebar.text_input("أدخل كلمة المرور لتفعيل المنصة:", type="password")
+# التحقق من كلمة المرور قبل فتح المنصة للمستخدم لحماية معادلاتك من السرقة والتلاعب
+if user_password == PASSWORD_SECRET:
+    # لوحة التحكم الجانبية بالفلاتر الفنية والمالية (تظهر فقط بعد كتابة الرمز السري الصحيح)
+    st.sidebar.markdown("<hr><h3 style='text-align: right; color: #ffffff;'>⚙️ فلاتر الفرز الفني</h3>", unsafe_allow_html=True)
+    halal_only = st.sidebar.checkbox("🕌 عرض الأسهم الحلال (النقية) فقط", value=False, key="halal_filter")
+    rsi_limit = st.sidebar.slider("الحد الأقصى لمؤشر القوة النسبية RSI", 20, 70, 50)
+    pe_limit = st.sidebar.slider("الحد الأقصى لمكرر الربحية P/E", 10, 45, 25)
 
-st.sidebar.markdown("<hr><h3 style='text-align: right; color: #00ff00;'>🧮 حاسبة مخاطر المحفظة</h3>", unsafe_allow_html=True)
-capital = st.sidebar.number_input("أدخل إجمالي رأس مال محفظتك (بالريال):", min_value=1000, value=50000, step=5000)
-risk_percent = st.sidebar.slider("نسبة المخاطرة المسموحة في الصفقة الواحدة (%):", 0.5, 5.0, 1.0, 0.5)
-# 2. جلب معالجة وتحديث البيانات الحية لـ 70 شركة من كبار عمالقة السوق
-live_data = fetch_tradingview_saudi_market(rsi_limit, pe_limit)
+    st.sidebar.markdown("<hr><h3 style='text-align: right; color: #00ff00;'>🧮 حاسبة مخاطر المحفظة</h3>", unsafe_allow_html=True)
+    capital = st.sidebar.number_input("أدخل إجمالي رأس مال محفظتك (بالريال):", min_value=1000, value=50000, step=5000)
+    risk_percent = st.sidebar.slider("نسبة المخاطرة المسموحة في الصفقة الواحدة (%):", 0.5, 5.0, 1.0, 0.5)
 
-# --- إضافة خانة البحث الذكية المزدوجة بالرمز والاسم في أعلى المنصة ---
-st.markdown("<div class='section-title'>🔍 محرك البحث السريع والمزدوج (بالاسم أو الرمز)</div>", unsafe_allow_html=True)
-search_query = st.text_input("اكتب رمز السهم الرقمي (مثال: 1120) أو اسم الشركة للفرز الفوري للجدول:", "").strip()
+    # 2. جلب معالجة وتحديث البيانات الحية لـ 70 شركة من كبار عمالقة السوق
+    live_data = fetch_tradingview_saudi_market(rsi_limit, pe_limit)
 
-all_rows = []
-elite_rows = []
-passed_rows = []
-buy_count = 0
+    # --- خانة البحث الذكية المزدوجة بالرمز والاسم ---
+    st.markdown("<div class='section-title'>🔍 محرك البحث السريع والمزدوج (بالاسم أو الرمز)</div>", unsafe_allow_html=True)
+    search_query = st.text_input("اكتب رمز السهم الرقمي (مثال: 1120) أو اسم الشركة للفرز الفوري للجدول:", "").strip()
 
-# حساب مبلغ المخاطرة الإجمالي بالريال بناءً على مدخلات الحاسبة الجانبية
-risk_cash = capital * (risk_percent / 100.0)
+    all_rows = []
+    elite_rows = []
+    passed_rows = []
+    buy_count = 0
 
-for stock in live_data:
-    # الفلترة الشرعية الذكية
-    if halal_only and stock['sharia'] != "🟢 نقية (حلال)":
-        continue
-        
-    # محرك البحث المزدوج بالعربية: فحص المطابقة بالرمز الرقمي أو الاسم الرسمي الكامل
-    if search_query:
-        if search_query not in stock['symbol'] and search_query not in stock['name']:
+    # حساب مبلغ المخاطرة الإجمالي بالريال بناءً على مدخلات حاسبة المخاطر الجانبية
+    risk_cash = capital * (risk_percent / 100.0)
+
+    for stock in live_data:
+        if halal_only and stock['sharia'] != "🟢 نقية (حلال)":
             continue
             
-    # حساب حجم الصفقة والكمية المقترحة آلياً بناءً على بُعد وقف الخسارة عن السعر الحالي
-    price_val = stock['price']
-    sl_val = stock['sl']
-    per_share_risk = price_val - sl_val
-    
-    if per_share_risk > 0:
-        suggested_qty = int(risk_cash / per_share_risk)
-        suggested_qty = max(suggested_qty, 0)
-        total_cost = suggested_qty * price_val
-        if total_cost > capital:
-            suggested_qty = int(capital / price_val)
+        if search_query:
+            if search_query not in stock['symbol'] and search_query not in stock['name']:
+                continue
+                
+        price_val = stock['price']
+        sl_val = stock['sl']
+        per_share_risk = price_val - sl_val
+        
+        # حساب كمية الأسهم الدقيقة والسيولة المطلوبة بناءً على وقف الخسارة الحقيقي وحجم محفظتك
+        if per_share_risk > 0:
+            suggested_qty = int(risk_cash / per_share_risk)
+            suggested_qty = max(suggested_qty, 0)
             total_cost = suggested_qty * price_val
-    else:
-        suggested_qty = 0
-        total_cost = 0.0
-
-    stock_entry = {
-        "رمز السهم": stock['symbol'], 
-        "اسم الشركة": stock['name'],
-        "التصنيف الشرعي": stock['sharia'], 
-        "السعر الحالي": f"{price_val:.2f} ريال",
-        "مؤشر RSI": round(stock['rsi'], 1), 
-        "فيبوناتشي": stock['fib_status'],
-        "الهدف الأول": f"{stock['t1']:.2f} ريال", 
-        "وقف الخسارة": f"{sl_val:.2f} ريال",
-        "الكمية المقترحة": f"{suggested_qty} سهم",
-        "سيولة الصفقة": f"{total_cost:.2f} ريال",
-        "الالنقاط الفنية": stock['score'], 
-        "التوصية النهائية": stock['rec']
-    }
-    
-    all_rows.append(stock_entry)
-    if "شراء قوي" in stock['rec']:
-        elite_rows.append(stock_entry)
-        buy_count += 1
-    elif "شراء" in stock['rec']:
-        passed_rows.append(stock_entry)
-        buy_count += 1
-
-# تحويل القوائم المعالجة إلى جداول بيانات لتبدو كشاشات تداول حقيقية واضحة
-df_all = pd.DataFrame(all_rows) if all_rows else pd.DataFrame()
-df_elite = pd.DataFrame(elite_rows) if elite_rows else pd.DataFrame()
-df_passed = pd.DataFrame(passed_rows) if passed_rows else pd.DataFrame()
-
-if not df_all.empty:
-    df_all = df_all.sort_values(by="الالنقاط الفنية", ascending=False)
-    df_all["الالنقاط الفنية"] = df_all["الالنقاط الفنية"].apply(lambda x: f"{x}/8")
-
-if not df_elite.empty:
-    df_elite = df_elite.sort_values(by="الالنقاط الفنية", ascending=False)
-    df_elite["الالنقاط الفنية"] = df_elite["الالنقاط الفنية"].apply(lambda x: f"{x}/8")
-
-if not df_passed.empty:
-    df_passed = df_passed.sort_values(by="الالنقاط الفنية", ascending=False)
-    df_passed["الالنقاط الفنية"] = df_passed["الالنقاط الفنية"].apply(lambda x: f"{x}/8")
-
-market_sentiment = (buy_count / len(all_rows)) * 100 if all_rows else 0
-
-# --- عرض العدادات الإحصائية عالية التباين (KPI Terminal Bar) ---
-k_col1, k_col2, k_col3, k_col4 = st.columns(4)
-with k_col1:
-    st.markdown(f"<div class='carbon-card'><div class='card-value' style='color: #ffffff;'>{len(all_rows)}</div><div class='card-label'>الأسهم المفحوصة والمطابقة</div></div>", unsafe_allow_html=True)
-with k_col2:
-    st.markdown(f"<div class='carbon-card' style='border-color: #ffffff;'><div class='card-value' style='color: #00ff00;'>{len(df_elite)}</div><div class='card-label'>🏆 صفقات النخبة الفائقة (7+)</div></div>", unsafe_allow_html=True)
-with k_col3:
-    st.markdown(f"<div class='carbon-card'><div class='card-value' style='color: #00ff00;'>{len(df_passed)}</div><div class='card-label'>إشارات الشراء العادية (4-6)</div></div>", unsafe_allow_html=True)
-with k_col4:
-    st.markdown(f"<div class='carbon-card'><div class='card-value' style='color: #00ff00;'>{market_sentiment:.1f}%</div><div class='card-label'>زخم تفاؤل السوق الحالي</div></div>", unsafe_allow_html=True)
-
-st.markdown("<br>", unsafe_allow_html=True)
-
-# --- تنظيم الهيكل العريض المتوازي الاحترافي للأقسام (Dual-Terminal Layout) ---
-col_left, col_right = st.columns([0.58, 0.42])
-
-with col_left:
-    st.markdown("<div class='trade-title'>🏆 أولاً: صفقات النخبة الفائقة الذهبية (حسابات إدارة مخاطر المحفظة مدمجة آلياً)</div>", unsafe_allow_html=True)
-    if not df_elite.empty:
-        st.dataframe(df_elite[["رمز السهم", "اسم الشركة", "السعر الحالي", "وقف الخسارة", "الكمية المقترحة", "سيولة الصفقة", "الالنقاط الفنية", "التوصية النهائية"]], width="stretch", hide_index=True)
-    else:
-        st.info("لا توجد أسهم حالياً حققت نقاط النخبة الصارمة كاملة. خفف فلاتر مؤشر RSI والـ P/E من الجانب.")
-
-    st.markdown("<br><div class='trade-title'>🔥 ثانياً: شركات في نطاق الشراء والمراقبة العادية (مع تحديد حجم الكمية لكل سهم)</div>", unsafe_allow_html=True)
-    if not df_passed.empty:
-        st.dataframe(df_passed[["رمز السهم", "اسم الشركة", "السعر الحالي", "وقف الخسارة", "الكمية المقترحة", "سيولة الصفقة", "الالنقاط الفنية", "التوصية النهائية"]], width="stretch", hide_index=True)
-    else:
-        st.info("لا توجد أسهم في نطاق الشراء العادي حالياً.")
-
-with col_right:
-    st.markdown("<div class='trade-title'>📊 ثالثاً: مركز الرسوم البيانية المتزامنة ونبض الأسعار الحقيقية</div>", unsafe_allow_html=True)
-    
-    sub_col1, sub_col2 = st.columns(2)
-    with sub_col1:
-        if all_rows:
-            stock_map = {s['رمز السهم']: f"{s['رمز السهم']}" for s in all_rows}
-            # تم الإصلاح الجذري لقراءة أسماء الشركات والرموز بوضوح كامل بخلفية رمادية غامقة ونصوص بيضاء عريضة جداً
-            selected_stock = st.selectbox("اختر رمز السهم المستهدف:", list(stock_map.keys()), format_func=lambda x: f"{x} - {next(s['اسم الشركة'] for s in all_rows if s['رمز السهم'] == x)}")
+            if total_cost > capital:
+                suggested_qty = int(capital / price_val)
+                total_cost = suggested_qty * price_val
         else:
-            selected_stock = None
-            st.warning("لا توجد شركات مطابقة للبحث أو التصفية الحالية.")
-    with sub_col2:
-        chart_type = st.selectbox(
-            "نوع الرسم البياني الفني:",
-            ["الشموع اليابانية (Candlestick)", "هيكن آشي المفلتر (Heikin-Ashi)", "خطي (Line)", "مساحي (Area)"]
-        )
+            suggested_qty = 0
+            total_cost = 0.0
 
-    if selected_stock:
-        target_data = next(s for s in live_data if s['symbol'] == selected_stock)
-        base_p = float(target_data['price'])
+        stock_entry = {
+            "رمز السهم": stock['symbol'], 
+            "اسم الشركة": stock['name'],
+            "التصنيف الشرعي": stock['sharia'], 
+            "السعر الحالي": f"{price_val:.2f} ريال",
+            "مؤشر RSI": round(stock['rsi'], 1), 
+            "فيبوناتشي": stock['fib_status'],
+            "الهدف الأول": f"{stock['t1']:.2f} ريال", 
+            "وقف الخسارة": f"{sl_val:.2f} ريال",
+            "الكمية المقترحة": f"{suggested_qty} سهم",
+            "سيولة الصفقة": f"{total_cost:.2f} ريال",
+            "الالنقاط الفنية": stock['score'], 
+            "التوصية النهائية": stock['rec']
+        }
         
-        np.random.seed(int(selected_stock))
-        dates = pd.date_range(end=pd.Timestamp.today(), periods=30)
-        closes = base_p + np.random.normal(0, base_p*0.015, size=30).cumsum()
-        opens = closes * np.random.uniform(0.99, 1.01, size=30)
-        highs = np.maximum(opens, closes) * np.random.uniform(1.0, 1.02, size=30)
-        lows = np.minimum(opens, closes) * np.random.uniform(0.98, 1.0, size=30)
-        
-        h_val = float(highs.max())
-        l_val = float(lows.min())
-        d_val = h_val - l_val
-        f618 = l_val + d_val * 0.618
-        
-        rsi_values = np.clip(target_data['rsi'] + np.random.normal(0, 4, size=30).cumsum(), 15, 85)
-        
-        fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.06, row_heights=[0.68, 0.32])
-        
-        if "Candlestick" in chart_type:
-            fig.add_trace(go.Candlestick(x=dates, open=opens, high=highs, low=lows, close=closes, name="السعر"), row=1, col=1)
-        elif "Heikin-Ashi" in chart_type:
-            ha_closes = (opens + highs + lows + closes) / 4
-            ha_opens = np.zeros_like(opens)
-            ha_opens = (opens + closes) / 2
-            for t in range(1, len(opens)):
-                ha_opens[t] = (ha_opens[t-1] + ha_closes[t-1]) / 2
-            ha_highs = np.maximum(highs, np.maximum(ha_opens, ha_closes))
-            ha_lows = np.minimum(lows, np.minimum(ha_opens, ha_closes))
-            fig.add_trace(go.Candlestick(x=dates, open=ha_opens, high=ha_highs, low=ha_lows, close=ha_closes, name="هيكن آشي"), row=1, col=1)
-        elif "Line" in chart_type:
-            fig.add_trace(go.Scatter(x=dates, y=closes, mode='lines', line=dict(color='#00ff00', width=2.5), name="السعر الخطي"), row=1, col=1)
-        elif "Area" in chart_type:
-            fig.add_trace(go.Scatter(x=dates, y=closes, mode='lines', fill='tozeroy', line=dict(color='#ff9900'), name="المساحة الملونة"), row=1, col=1)
-        
-        fig.add_hline(y=h_val, line_dash="dash", line_color="#ff4d4d", annotation_text=f"القمة ({h_val:.2f})", row=1, col=1)
-        fig.add_hline(y=f618, line_dash="dash", line_color="#ffffff", annotation_text=f"فيبوناتشي الذهبي 61.8% ({f618:.2f})", row=1, col=1)
-        fig.add_hline(y=l_val, line_dash="dash", line_color="#00ff00", annotation_text=f"القاع ({l_val:.2f})", row=1, col=1)
-        
-        fig.add_trace(go.Scatter(x=dates, y=rsi_values, mode='lines', line=dict(color='#ff00ff', width=1.5)), row=2, col=1)
-        fig.add_hline(y=70, line_dash="dot", line_color="#ff4d4d", row=2, col=1)
-        fig.add_hline(y=30, line_dash="dot", line_color="#00ff00", row=2, col=1)
-        
-        fig.update_layout(template="plotly_dark", height=470, showlegend=False, xaxis_rangeslider_visible=False,
-                          margin=dict(l=10, r=10, t=10, b=10), paper_bgcolor='#000000', plot_bgcolor='#0d1117')
-        st.plotly_chart(fig, use_container_width=True)
+        all_rows.append(stock_entry)
+        if "شراء قوي" in stock['rec']:
+            elite_rows.append(stock_entry)
+            buy_count += 1
+        elif "شراء" in stock['rec']:
+            passed_rows.append(stock_entry)
+            buy_count += 1
 
-st.markdown("<br><div class='trade-title'>📋 رابعاً: محطة المراقبة المرجعية الكاملة لكافة شركات تداول المدرجة</div>", unsafe_allow_html=True)
-if not df_all.empty:
-    st.dataframe(df_all[["رمز السهم", "اسم الشركة", "التصنيف الشرعي", "السعر الحالي", "مؤشر RSI", "فيبوناتشي", "التوصية النهائية"]], width="stretch", hide_index=True)
+    # تحويل القوائم المعالجة إلى جداول بيانات لترتيبها
+    df_all = pd.DataFrame(all_rows) if all_rows else pd.DataFrame()
+    df_elite = pd.DataFrame(elite_rows) if elite_rows else pd.DataFrame()
+    df_passed = pd.DataFrame(passed_rows) if passed_rows else pd.DataFrame()
+
+    if not df_all.empty:
+        df_all = df_all.sort_values(by="الالنقاط الفنية", ascending=False)
+        df_all["الالنقاط الفنية"] = df_all["الالنقاط الفنية"].apply(lambda x: f"{x}/8")
+
+    if not df_elite.empty:
+        df_elite = df_elite.sort_values(by="الالنقاط الفنية", ascending=False)
+        df_elite["الالنقاط الفنية"] = df_elite["الالنقاط الفنية"].apply(lambda x: f"{x}/8")
+
+    if not df_passed.empty:
+        df_passed = df_passed.sort_values(by="الالنقاط الفنية", ascending=False)
+        df_passed["الالنقاط الفنية"] = df_passed["الالنقاط الفنية"].apply(lambda x: f"{x}/8")
+
+    market_sentiment = (buy_count / len(all_rows)) * 100 if all_rows else 0
+    # --- عرض العدادات الإحصائية عالية التباين (KPI Terminal Bar) ---
+    k_col1, k_col2, k_col3, k_col4 = st.columns(4)
+    with k_col1:
+        st.markdown(f"<div class='carbon-card'><div class='card-value' style='color: #ffffff;'>{len(all_rows)}</div><div class='card-label'>الأسهم المفحوصة والمطابقة</div></div>", unsafe_allow_html=True)
+    with k_col2:
+        st.markdown(f"<div class='carbon-card' style='border-color: #ffffff;'><div class='card-value' style='color: #00ff00;'>{len(df_elite)}</div><div class='card-label'>🏆 صفقات النخبة الفائقة (7+)</div></div>", unsafe_allow_html=True)
+    with k_col3:
+        st.markdown(f"<div class='carbon-card'><div class='card-value' style='color: #00ff00;'>{len(df_passed)}</div><div class='card-label'>إشارات الشراء العادية (4-6)</div></div>", unsafe_allow_html=True)
+    with k_col4:
+        st.markdown(f"<div class='carbon-card'><div class='card-value' style='color: #00ff00;'>{market_sentiment:.1f}%</div><div class='card-label'>زخم تفاؤل السوق الحالي</div></div>", unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # --- تنظيم الهيكل العريض المتوازي الاحترافي للأقسام (Dual-Terminal Layout) ---
+    col_left, col_right = st.columns([0.58, 0.42])
+
+    with col_left:
+        st.markdown("<div class='trade-title'>🏆 أولاً: صفقات النخبة الفائقة الذهبية (إشارات حية متكاملة 7/8 فأعلى)</div>", unsafe_allow_html=True)
+        if not df_elite.empty:
+            st.dataframe(df_elite[["رمز السهم", "اسم الشركة", "السعر الحالي", "وقف الخسارة", "الكمية المقترحة", "سيولة الصفقة", "الالنقاط الفنية", "التوصية النهائية"]], width="stretch", hide_index=True)
+        else:
+            st.info("لا توجد أسهم حالياً حققت نقاط النخبة الصارمة كاملة. خفف فلاتر مؤشر RSI والـ P/E من الجانب.")
+
+        st.markdown("<br><div class='trade-title'>🔥 ثانياً: شركات في نطاق الشراء والمراقبة العادية (من 4 إلى 6 نقاط)</div>", unsafe_allow_html=True)
+        if not df_passed.empty:
+            st.dataframe(df_passed[["رمز السهم", "اسم الشركة", "السعر الحالي", "وقف الخسارة", "الكمية المقترحة", "سيولة الصفقة", "الالنقاط الفنية", "التوصية النهائية"]], width="stretch", hide_index=True)
+        else:
+            st.info("لا توجد أسهم في نطاق الشراء العادي حالياً.")
+
+    with col_right:
+        st.markdown("<div class='trade-title'>📊 ثالثاً: مركز الرسوم البيانية المتزامنة ونبض الأسعار الحقيقية</div>", unsafe_allow_html=True)
+        
+        sub_col1, sub_col2 = st.columns(2)
+        with sub_col1:
+            if all_rows:
+                stock_map = {s['رمز السهم']: s['رمز السهم'] for s in all_rows}
+                # تم الإصلاح الجذري لقراءة أسماء الشركات والرموز بوضوح كامل بخلفية رمادية غامقة ونصوص بيضاء عريضة جداً
+                selected_stock = st.selectbox("اختر رمز السهم المستهدف:", list(stock_map.keys()), format_func=lambda x: f"{x} - {next(s['اسم الشركة'] for s in all_rows if s['رمز السهم'] == x)}")
+            else:
+                selected_stock = None
+                st.warning("لا توجد شركات مطابقة للبحث أو التصفية الحالية.")
+        with sub_col2:
+            chart_type = st.selectbox(
+                "نوع الرسم البياني الفني:",
+                ["الشموع اليابانية (Candlestick)", "هيكن آشي المفلتر (Heikin-Ashi)", "خطي (Line)", "مساحي (Area)"]
+            )
+
+        if selected_stock:
+            target_data = next(s for s in live_data if s['symbol'] == selected_stock)
+            base_p = float(target_data['price'])
+            
+            np.random.seed(int(selected_stock))
+            dates = pd.date_range(end=pd.Timestamp.today(), periods=30)
+            closes = base_p + np.random.normal(0, base_p*0.015, size=30).cumsum()
+            opens = closes * np.random.uniform(0.99, 1.01, size=30)
+            highs = np.maximum(opens, closes) * np.random.uniform(1.0, 1.02, size=30)
+            lows = np.minimum(opens, closes) * np.random.uniform(0.98, 1.0, size=30)
+            
+            h_val = float(highs.max())
+            l_val = float(lows.min())
+            d_val = h_val - l_val
+            f618 = l_val + d_val * 0.618
+            
+            rsi_values = np.clip(target_data['rsi'] + np.random.normal(0, 4, size=30).cumsum(), 15, 85)
+            
+            fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.06, row_heights=[0.68, 0.32])
+            
+            if "Candlestick" in chart_type:
+                fig.add_trace(go.Candlestick(x=dates, open=opens, high=highs, low=lows, close=closes, name="السعر"), row=1, col=1)
+            elif "Heikin-Ashi" in chart_type:
+                ha_closes = (opens + highs + lows + closes) / 4
+                ha_opens = np.zeros_like(opens)
+                ha_opens = (opens + closes) / 2
+                for t in range(1, len(opens)):
+                    ha_opens[t] = (ha_opens[t-1] + ha_closes[t-1]) / 2
+                ha_highs = np.maximum(highs, np.maximum(ha_opens, ha_closes))
+                ha_lows = np.minimum(lows, np.minimum(ha_opens, ha_closes))
+                fig.add_trace(go.Candlestick(x=dates, open=ha_opens, high=ha_highs, low=ha_lows, close=ha_closes, name="هيكن آشي"), row=1, col=1)
+            elif "Line" in chart_type:
+                fig.add_trace(go.Scatter(x=dates, y=closes, mode='lines', line=dict(color='#00ff00', width=2.5), name="السعر الخطي"), row=1, col=1)
+            elif "Area" in chart_type:
+                fig.add_trace(go.Scatter(x=dates, y=closes, mode='lines', fill='tozeroy', line=dict(color='#ff9900'), name="المساحة الملونة"), row=1, col=1)
+            
+            fig.add_hline(y=h_val, line_dash="dash", line_color="#ff4d4d", annotation_text=f"القمة ({h_val:.2f})", row=1, col=1)
+            fig.add_hline(y=f618, line_dash="dash", line_color="#ffffff", annotation_text=f"فيبوناتشي الذهبي 61.8% ({f618:.2f})", row=1, col=1)
+            fig.add_hline(y=l_val, line_dash="dash", line_color="#00ff00", annotation_text=f"القاع ({l_val:.2f})", row=1, col=1)
+            
+            fig.add_trace(go.Scatter(x=dates, y=rsi_values, mode='lines', line=dict(color='#ff00ff', width=1.5)), row=2, col=1)
+            fig.add_hline(y=70, line_dash="dot", line_color="#ff4d4d", row=2, col=1)
+            fig.add_hline(y=30, line_dash="dot", line_color="#00ff00", row=2, col=1)
+            
+            fig.update_layout(template="plotly_dark", height=470, showlegend=False, xaxis_rangeslider_visible=False,
+                              margin=dict(l=10, r=10, t=10, b=10), paper_bgcolor='#000000', plot_bgcolor='#0d1117')
+            st.plotly_chart(fig, use_container_width=True)
+
+    st.markdown("<br><div class='trade-title'>📋 رابعاً: محطة المراقبة المرجعية الكاملة لكافة شركات تداول المدرجة</div>", unsafe_allow_html=True)
+    if not df_all.empty:
+        st.dataframe(df_all[["رمز السهم", "اسم الشركة", "التصنيف الشرعي", "السعر الحالي", "مؤشر RSI", "فيبوناتشي", "التوصية النهائية"]], width="stretch", hide_index=True)
+else:
+    # رسالة أمنية ناصعة تظهر في حال عدم كتابة الرقم السري المالي الصحيح لمنع التجسس
+    st.warning("🔒 يرجى إدخال كلمة المرور الصحيحة في القائمة الجانبية لفك تشفير وعرض بيانات الرادار الاستثماري.")
