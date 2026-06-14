@@ -6,30 +6,20 @@ import json
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-# 1. إعدادات الصفحة وهوية التداول العالمية فائقة التجاوب مع الجوال (Mobile-Responsive UI)
+# 1. إعدادات الصفحة وهوية التداول العالمية فائقة التجاوب مع الجوال والكمبيوتر (sequential Fluid UI)
 st.set_page_config(page_title="رادار تداول الكمي للمحترفين Pro", page_icon="⚡", layout="wide")
 
 PASSWORD_SECRET = "1234"
 
-# حقن كود CSS مطور ومتقدم جداً لحل مشكلة الخط العمودي وضغط الحروف على شاشات الجوال
+# حقن ستايل CSS المطور بأعلى درجات التباين والوضوح (نصوص بيضاء على خلفية سوداء فاحمة صريحة)
 st.markdown("""
     <style>
     /* تغيير الخلفية العامة وتأكيد الخط العربي العريض الواضح */
     .stApp { background-color: #000000; color: #ffffff; font-family: 'Segoe UI', sans-serif; text-align: right; direction: rtl; }
     
-    /* منع تداخل الحروف وحل مشكلة الخط في المنتصف على الجوال */
-    [data-testid="stHorizontalBlock"] {
-        flex-direction: column !important;
-    }
-    @media (min-width: 768px) {
-        [data-testid="stHorizontalBlock"] {
-            flex-direction: row-reverse !important;
-        }
-    }
-    
-    /* تحويل خلفية القائمة الجانبية بالكامل إلى الأسود الفاحم وإظهار خطوطها بالأبيض الحاد */
-    section[data-testid="stSidebar"] { background-color: #000000 !important; border-left: 2px solid #ffffff !important; }
-    section[data-testid="stSidebar"] * { color: #ffffff !important; font-weight: 900 !important; font-size: 16px !important; text-align: right !important; }
+    /* إلغاء الفواصل والهوامش الجانبية المزعجة لتوسيع مساحة الرؤية */
+    [data-testid="stSidebar"] { background-color: #000000 !important; border-left: 2px solid #ffffff !important; }
+    [data-testid="stSidebar"] * { color: #ffffff !important; font-weight: 900 !important; font-size: 16px !important; text-align: right !important; }
     
     /* تثبيت الخلفية الداكنة الصريحة والنص الأبيض الناصع العريض جداً داخل الصناديق المنسدلة للقراءة 100% */
     div[data-baseweb="select"] { background-color: #1a1f2c !important; border: 2px solid #ffffff !important; border-radius: 8px; padding: 6px; }
@@ -53,10 +43,10 @@ st.markdown("""
         box-shadow: 0 10px 35px rgba(0,0,0,0.6);
         text-align: right;
     }
-    .carbon-card { background: #000000; border: 2px solid #ffffff; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 10px; }
+    .carbon-card { background: #000000; border: 2px solid #ffffff; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 12px; }
     .card-value { font-size: 34px; font-weight: 900; font-family: 'Consolas', monospace; color: #00ff00; }
     .card-label { font-size: 14px; color: #ffffff; font-weight: bold; margin-top: 6px; }
-    .trade-title { color: #ffffff; font-size: 20px; font-weight: 900; border-bottom: 2px solid #ffffff; padding-bottom: 10px; margin-bottom: 20px; text-align: right; }
+    .trade-title { color: #ffffff; font-size: 20px; font-weight: 900; border-bottom: 2px solid #ffffff; padding-bottom: 10px; margin-bottom: 25px; text-align: right; }
     .section-title { color: #ffffff; font-size: 19px; font-weight: 900; padding: 5px 10px; border-right: 4px solid #ffffff; margin-bottom: 20px; text-align: right; }
     </style>
 """, unsafe_allow_html=True)
@@ -65,7 +55,7 @@ st.markdown("""
     <div class='premium-header'>
         <div style='text-align: right;'>
             <span style='color: #ffffff; font-size: 26px; font-weight: 900;'>⚡ محطة تداول الإحصائية المشفرة | TADAWUL SECURE</span>
-            <p style='color: #ffffff; font-size: 14px; font-weight: bold; margin: 5px 0 0 0;'>منصة المسح الفني لـ 70 شركة قيادية سعودية - النسخة المحمية والمحدثة للتجاوب التام مع الجوال</p>
+            <p style='color: #ffffff; font-size: 14px; font-weight: bold; margin: 5px 0 0 0;'>منصة المسح الفني لـ 70 شركة قيادية سعودية - النسخة المحمية والمصلحة للتجاوب التام والانسيابي مع الجوال</p>
         </div>
     </div>
 """, unsafe_allow_html=True)
@@ -151,7 +141,7 @@ def fetch_tradingview_saudi_market(rsi_l, pe_l):
         })
     return rows
 
-# لوحة التحكم الجانبية بالكامل
+# لوحة التحكم الجانبية بالكامل باللون الأبيض العريض والخلفية السوداء
 st.sidebar.markdown("<h3 style='text-align: right; color: #ffffff;'>⚙️ فلاتر الفرز الفني</h3>", unsafe_allow_html=True)
 halal_only = st.sidebar.checkbox("🕌 عرض الأسهم الحلال (النقية) فقط", value=False, key="halal_filter")
 rsi_limit = st.sidebar.slider("الحد الأقصى لمؤشر القوة النسبية RSI", 20, 70, 50)
@@ -183,9 +173,6 @@ if user_password == PASSWORD_SECRET:
             continue
             
         if search_query:
-            if search_query not in stock['symbol'] and search_query not in stock['name']:
-                continue
-                
             search_query_lower = search_query.lower()
             if search_query_lower not in stock['symbol'].lower() and search_query_lower not in stock['name'].lower():
                 continue
@@ -247,98 +234,88 @@ if user_password == PASSWORD_SECRET:
 
     market_sentiment = (buy_count / len(all_rows)) * 100 if all_rows else 0
     # --- عرض العدادات الإحصائية عالية التباين (KPI Terminal Bar) ---
-    k_col1, k_col2, k_col3, k_col4 = st.columns(4)
-    with k_col1:
-        st.markdown(f"<div class='carbon-card'><div class='card-value' style='color: #ffffff;'>{len(all_rows)}</div><div class='card-label'>الأسهم المفحوصة والمطابقة</div></div>", unsafe_allow_html=True)
-    with k_col2:
-        st.markdown(f"<div class='carbon-card' style='border-color: #ffffff;'><div class='card-value' style='color: #00ff00;'>{len(df_elite)}</div><div class='card-label'>🏆 صفقات النخبة الفائقة (7+)</div></div>", unsafe_allow_html=True)
-    with k_col3:
-        st.markdown(f"<div class='carbon-card'><div class='card-value' style='color: #00ff00;'>{len(df_passed)}</div><div class='card-label'>إشارات الشراء العادية (4-6)</div></div>", unsafe_allow_html=True)
-    with k_col4:
-        st.markdown(f"<div class='carbon-card'><div class='card-value' style='color: #00ff00;'>{market_sentiment:.1f}%</div><div class='card-label'>زخم تفاؤل السوق الحالي</div></div>", unsafe_allow_html=True)
+    k_col1 = st.markdown(f"<div class='carbon-card'><div class='card-value' style='color: #ffffff;'>{len(all_rows)}</div><div class='card-label'>الأسهم المفحوصة والمطابقة</div></div>", unsafe_allow_html=True)
+    k_col2 = st.markdown(f"<div class='carbon-card' style='border-color: #ffffff;'><div class='card-value' style='color: #00ff00;'>{len(df_elite)}</div><div class='card-label'>🏆 صفقات النخبة الفائقة (7+)</div></div>", unsafe_allow_html=True)
+    k_col3 = st.markdown(f"<div class='carbon-card'><div class='card-value' style='color: #00ff00;'>{len(df_passed)}</div><div class='card-label'>إشارات الشراء العادية (4-6)</div></div>", unsafe_allow_html=True)
+    k_col4 = st.markdown(f"<div class='carbon-card'><div class='card-value' style='color: #00ff00;'>{market_sentiment:.1f}%</div><div class='card-label'>زخم تفاؤل السوق الحالي</div></div>", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # --- تنظيم الهيكل العريض المتوازي الاحترافي للأقسام (Dual-Terminal Layout) ---
-    col_left, col_right = st.columns([0.58, 0.42])
+    # --- الترتيب العمودي الانسيابي الخالص المانع للخط الفاص والارتداد على الجوال ---
+    st.markdown("<div class='trade-title'>🏆 أولاً: صفقات النخبة الفائقة الذهبية (حسابات إدارة مخاطر المحفظة مدمجة آلياً)</div>", unsafe_allow_html=True)
+    if not df_elite.empty:
+        st.dataframe(df_elite[["رمز السهم", "اسم الشركة", "السعر الحالي", "وقف الخسارة", "الكمية المقترحة", "سيولة الصفقة", "الالنقاط الفنية", "التوصية النهائية"]], width="stretch", hide_index=True)
+    else:
+        st.info("لا توجد أسهم حالياً حققت نقاط النخبة الصارمة كاملة. خفف فلاتر مؤشر RSI والـ P/E من الجانب.")
 
-    with col_left:
-        st.markdown("<div class='trade-title'>🏆 أولاً: صفقات النخبة الفائقة الذهبية (حسابات إدارة مخاطر المحفظة مدمجة آلياً)</div>", unsafe_allow_html=True)
-        if not df_elite.empty:
-            st.dataframe(df_elite[["رمز السهم", "اسم الشركة", "السعر الحالي", "وقف الخسارة", "الكمية المقترحة", "سيولة الصفقة", "الالنقاط الفنية", "التوصية النهائية"]], width="stretch", hide_index=True)
-        else:
-            st.info("لا توجد أسهم حالياً حققت نقاط النخبة الصارمة كاملة. خفف فلاتر مؤشر RSI والـ P/E من الجانب.")
+    st.markdown("<br><div class='trade-title'>🔥 ثانياً: شركات في نطاق الشراء والمراقبة العادية (مع تحديد حجم الكمية لكل سهم)</div>", unsafe_allow_html=True)
+    if not df_passed.empty:
+        st.dataframe(df_passed[["رمز السهم", "اسم الشركة", "السعر الحالي", "وقف الخسارة", "الكمية المقترحة", "سيولة الصفقة", "الالنقاط الفنية", "التوصية النهائية"]], width="stretch", hide_index=True)
+    else:
+        st.info("لا توجد أسهم في نطاق الشراء العادي حالياً.")
 
-        st.markdown("<br><div class='trade-title'>🔥 ثانياً: شركات في نطاق الشراء والمراقبة العادية (مع تحديد حجم الكمية لكل سهم)</div>", unsafe_allow_html=True)
-        if not df_passed.empty:
-            st.dataframe(df_passed[["رمز السهم", "اسم الشركة", "السعر الحالي", "وقف الخسارة", "الكمية المقترحة", "سيولة الصفقة", "الالنقاط الفنية", "التوصية النهائية"]], width="stretch", hide_index=True)
-        else:
-            st.info("لا توجد أسهم في نطاق الشراء العادي حالياً.")
+    st.markdown("<br><div class='trade-title'>📊 ثالثاً: مركز الرسوم البيانية المتزامنة ونبض الأسعار الحقيقية</div>", unsafe_allow_html=True)
+    
+    # تحويل خيارات اختيار السهم والنموذج إلى عناصر متتالية طويلاً لتناسب مظهر شاشة الهاتف
+    if all_rows:
+        stock_map = {s['رمز السهم']: s['رمز السهم'] for s in all_rows}
+        selected_stock = st.selectbox("اختر رمز السهم المستهدف:", list(stock_map.keys()), format_func=lambda x: f"{x} - {next(s['اسم الشركة'] for s in all_rows if s['رمز السهم'] == x)}")
+    else:
+        selected_stock = None
+        st.warning("لا توجد شركات مطابقة للبحث أو التصفية الحالية.")
 
-    with col_right:
-        st.markdown("<div class='trade-title'>📊 ثالثاً: مركز الرسوم البيانية المتزامنة ونبض الأسعار الحقيقية</div>", unsafe_allow_html=True)
+    chart_type = st.selectbox(
+        "نوع الرسم البياني الفني:",
+        ["الشموع اليابانية (Candlestick)", "هيكن آشي المفلتر (Heikin-Ashi)", "خطي (Line)", "مساحي (Area)"]
+    )
+
+    if selected_stock:
+        target_data = next(s for s in live_data if s['symbol'] == selected_stock)
+        base_p = float(target_data['price'])
         
-        sub_col1, sub_col2 = st.columns(2)
-        with sub_col1:
-            if all_rows:
-                stock_map = {s['رمز السهم']: s['رمز السهم'] for s in all_rows}
-                selected_stock = st.selectbox("اختر رمز السهم المستهدف:", list(stock_map.keys()), format_func=lambda x: f"{x} - {next(s['اسم الشركة'] for s in all_rows if s['رمز السهم'] == x)}")
-            else:
-                selected_stock = None
-                st.warning("لا توجد شركات مطابقة للبحث أو التصفية الحالية.")
-        with sub_col2:
-            chart_type = st.selectbox(
-                "نوع الرسم البياني الفني:",
-                ["الشموع اليابانية (Candlestick)", "هيكن آشي المفلتر (Heikin-Ashi)", "خطي (Line)", "مساحي (Area)"]
-            )
-
-        if selected_stock:
-            target_data = next(s for s in live_data if s['symbol'] == selected_stock)
-            base_p = float(target_data['price'])
-            
-            np.random.seed(int(selected_stock))
-            dates = pd.date_range(end=pd.Timestamp.today(), periods=30)
-            closes = base_p + np.random.normal(0, base_p*0.015, size=30).cumsum()
-            opens = closes * np.random.uniform(0.99, 1.01, size=30)
-            highs = np.maximum(opens, closes) * np.random.uniform(1.0, 1.02, size=30)
-            lows = np.minimum(opens, closes) * np.random.uniform(0.98, 1.0, size=30)
-            
-            h_val = float(highs.max())
-            l_val = float(lows.min())
-            d_val = h_val - l_val
-            f618 = l_val + d_val * 0.618
-            
-            rsi_values = np.clip(target_data['rsi'] + np.random.normal(0, 4, size=30).cumsum(), 15, 85)
-            
-            fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.06, row_heights=[0.68, 0.32])
-            
-            if "Candlestick" in chart_type:
-                fig.add_trace(go.Candlestick(x=dates, open=opens, high=highs, low=lows, close=closes, name="السعر"), row=1, col=1)
-            elif "Heikin-Ashi" in chart_type:
-                ha_closes = (opens + highs + lows + closes) / 4
-                ha_opens = np.zeros_like(opens)
-                ha_opens = (opens + closes) / 2
-                for t in range(1, len(opens)):
-                    ha_opens[t] = (ha_opens[t-1] + ha_closes[t-1]) / 2
-                ha_highs = np.maximum(highs, np.maximum(ha_opens, ha_closes))
-                ha_lows = np.minimum(lows, np.minimum(ha_opens, ha_closes))
-                fig.add_trace(go.Candlestick(x=dates, open=ha_opens, high=ha_highs, low=ha_lows, close=ha_closes, name="هيكن آشي"), row=1, col=1)
-            elif "Line" in chart_type:
-                fig.add_trace(go.Scatter(x=dates, y=closes, mode='lines', line=dict(color='#00ff00', width=2.5), name="السعر الخطي"), row=1, col=1)
-            elif "Area" in chart_type:
-                fig.add_trace(go.Scatter(x=dates, y=closes, mode='lines', fill='tozeroy', line=dict(color='#ff9900'), name="المساحة الملونة"), row=1, col=1)
-            
-            fig.add_hline(y=h_val, line_dash="dash", line_color="#ff4d4d", annotation_text=f"القمة ({h_val:.2f})", row=1, col=1)
-            fig.add_hline(y=f618, line_dash="dash", line_color="#ffffff", annotation_text=f"فيبوناتشي الذهبي 61.8% ({f618:.2f})", row=1, col=1)
-            fig.add_hline(y=l_val, line_dash="dash", line_color="#00ff00", annotation_text=f"القاع ({l_val:.2f})", row=1, col=1)
-            
-            fig.add_trace(go.Scatter(x=dates, y=rsi_values, mode='lines', line=dict(color='#ff00ff', width=1.5)), row=2, col=1)
-            fig.add_hline(y=70, line_dash="dot", line_color="#ff4d4d", row=2, col=1)
-            fig.add_hline(y=30, line_dash="dot", line_color="#00ff00", row=2, col=1)
-            
-            fig.update_layout(template="plotly_dark", height=470, showlegend=False, xaxis_rangeslider_visible=False,
-                              margin=dict(l=10, r=10, t=10, b=10), paper_bgcolor='#000000', plot_bgcolor='#0d1117')
-            st.plotly_chart(fig, use_container_width=True)
+        np.random.seed(int(selected_stock))
+        dates = pd.date_range(end=pd.Timestamp.today(), periods=30)
+        closes = base_p + np.random.normal(0, base_p*0.015, size=30).cumsum()
+        opens = closes * np.random.uniform(0.99, 1.01, size=30)
+        highs = np.maximum(opens, closes) * np.random.uniform(1.0, 1.02, size=30)
+        lows = np.minimum(opens, closes) * np.random.uniform(0.98, 1.0, size=30)
+        
+        h_val = float(highs.max())
+        l_val = float(lows.min())
+        d_val = h_val - l_val
+        f618 = l_val + d_val * 0.618
+        
+        rsi_values = np.clip(target_data['rsi'] + np.random.normal(0, 4, size=30).cumsum(), 15, 85)
+        
+        fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.06, row_heights=[0.68, 0.32])
+        
+        if "Candlestick" in chart_type:
+            fig.add_trace(go.Candlestick(x=dates, open=opens, high=highs, low=lows, close=closes, name="السعر"), row=1, col=1)
+        elif "Heikin-Ashi" in chart_type:
+            ha_closes = (opens + highs + lows + closes) / 4
+            ha_opens = np.zeros_like(opens)
+            ha_opens = (opens + closes) / 2
+            for t in range(1, len(opens)):
+                ha_opens[t] = (ha_opens[t-1] + ha_closes[t-1]) / 2
+            ha_highs = np.maximum(highs, np.maximum(ha_opens, ha_closes))
+            ha_lows = np.minimum(lows, np.minimum(ha_opens, ha_closes))
+            fig.add_trace(go.Candlestick(x=dates, open=ha_opens, high=ha_highs, low=ha_lows, close=ha_closes, name="هيكن آشي"), row=1, col=1)
+        elif "Line" in chart_type:
+            fig.add_trace(go.Scatter(x=dates, y=closes, mode='lines', line=dict(color='#00ff00', width=2.5), name="السعر الخطي"), row=1, col=1)
+        elif "Area" in chart_type:
+            fig.add_trace(go.Scatter(x=dates, y=closes, mode='lines', fill='tozeroy', line=dict(color='#ff9900'), name="المساحة الملونة"), row=1, col=1)
+        
+        fig.add_hline(y=h_val, line_dash="dash", line_color="#ff4d4d", annotation_text=f"القمة ({h_val:.2f})", row=1, col=1)
+        fig.add_hline(y=f618, line_dash="dash", line_color="#ffffff", annotation_text=f"فيبوناتشي الذهبي 61.8% ({f618:.2f})", row=1, col=1)
+        fig.add_hline(y=l_val, line_dash="dash", line_color="#00ff00", annotation_text=f"القاع ({l_val:.2f})", row=1, col=1)
+        
+        fig.add_trace(go.Scatter(x=dates, y=rsi_values, mode='lines', line=dict(color='#ff00ff', width=1.5)), row=2, col=1)
+        fig.add_hline(y=70, line_dash="dot", line_color="#ff4d4d", row=2, col=1)
+        fig.add_hline(y=30, line_dash="dot", line_color="#00ff00", row=2, col=1)
+        
+        fig.update_layout(template="plotly_dark", height=470, showlegend=False, xaxis_rangeslider_visible=False,
+                          margin=dict(l=10, r=10, t=10, b=10), paper_bgcolor='#000000', plot_bgcolor='#0d1117')
+        st.plotly_chart(fig, use_container_width=True)
 
     st.markdown("<br><div class='trade-title'>📋 رابعاً: محطة المراقبة المرجعية الكاملة لكافة شركات تداول المدرجة</div>", unsafe_allow_html=True)
     if not df_all.empty:
