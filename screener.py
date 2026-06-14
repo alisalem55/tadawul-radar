@@ -6,31 +6,34 @@ import json
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-# 1. إعدادات الصفحة وهوية التداول العالمية فائقة التجاوب مع الجوال والكمبيوتر (sequential Fluid UI)
-st.set_page_config(page_title="رادار تداول الكمي للمحترفين Pro", page_icon="⚡", layout="wide")
+# 1. إعدادات الصفحة وكسر ذاكرة المتصفح المؤقتة لفرض التصميم الجديد على الجوال
+st.set_page_config(page_title="رادار تداول الكمي للمحترفين v2", page_icon="⚡", layout="wide")
 
 PASSWORD_SECRET = "1234"
 
-# حقن ستايل CSS المطور بأعلى درجات التباين والوضوح (نصوص بيضاء على خلفية سوداء فاحمة صريحة)
+# حقن كود CSS قوي ونهائي يمنع تماماً أي انقسام للشاشة أو ظهور خطوط على الجوال
 st.markdown("""
     <style>
-    /* تغيير الخلفية العامة وتأكيد الخط العربي العريض الواضح */
-    .stApp { background-color: #000000; color: #ffffff; font-family: 'Segoe UI', sans-serif; text-align: right; direction: rtl; }
+    /* فرض الخلفية السوداء والكتابة البيضاء العريضة الصريحة */
+    .stApp { background-color: #000000 !important; color: #ffffff !important; font-family: 'Segoe UI', sans-serif !important; text-align: right !important; direction: rtl !important; }
     
-    /* إلغاء الفواصل والهوامش الجانبية المزعجة لتوسيع مساحة الرؤية */
-    [data-testid="stSidebar"] { background-color: #000000 !important; border-left: 2px solid #ffffff !important; }
-    [data-testid="stSidebar"] * { color: #ffffff !important; font-weight: 900 !important; font-size: 16px !important; text-align: right !important; }
+    /* نسف وإلغاء حاويات التقسيم الأفقي لمنع ظهور الخطوط العمودية نهائياً على كافة الشاشات */
+    div[data-testid="stHorizontalBlock"] { flex-direction: column !important; display: block !important; width: 100% !important; margin: 0px !important; padding: 0px !important; gap: 0px !important; }
+    div[data-testid="column"] { width: 100% !important; max-width: 100% !important; display: block !important; margin-bottom: 15px !important; padding: 0px !important; }
     
-    /* تثبيت الخلفية الداكنة الصريحة والنص الأبيض الناصع العريض جداً داخل الصناديق المنسدلة للقراءة 100% */
+    /* جعل القائمة الجانبية سوداء فاحمة ونصوصها واضحة جداً */
+    section[data-testid="stSidebar"] { background-color: #000000 !important; border-left: 2px solid #ffffff !important; }
+    section[data-testid="stSidebar"] * { color: #ffffff !important; font-weight: 900 !important; font-size: 16px !important; text-align: right !important; }
+    
+    /* تلوين وتوضيح الصناديق المنسدلة بخلفية داكنة واضحة ونصوص بيضاء عريضة */
     div[data-baseweb="select"] { background-color: #1a1f2c !important; border: 2px solid #ffffff !important; border-radius: 8px; padding: 6px; }
     div[data-baseweb="select"] * { color: #ffffff !important; font-weight: 900 !important; font-size: 18px !important; }
     
-    div[role="listbox"] { background-color: #000000 !important; border: 2px solid #ffffff !important; box-shadow: 0px 10px 30px rgba(0,0,0,1); }
+    div[role="listbox"] { background-color: #000000 !important; border: 2px solid #ffffff !important; }
     div[role="listbox"] li { color: #ffffff !important; font-weight: 900 !important; font-size: 16px !important; background-color: #000000 !important; padding: 12px !important; border-bottom: 1px solid #1f293d; text-align: right !important; }
     div[role="listbox"] li:hover { background-color: #1a1f2c !important; color: #00ff00 !important; }
     
     .stTextInput input, .stNumberInput input { color: #ffffff !important; background-color: #000000 !important; border: 2px solid #ffffff !important; font-size: 16px !important; font-weight: 900 !important; text-align: right !important; }
-    .stTextInput input:focus, .stNumberInput input:focus { border-color: #00ff00 !important; box-shadow: 0 0 10px rgba(0,255,0,0.3) !important; }
     
     label { color: #ffffff !important; font-weight: 900 !important; font-size: 16px !important; text-align: right !important; display: block; margin-bottom: 8px; }
     
@@ -40,10 +43,9 @@ st.markdown("""
         border-radius: 12px;
         padding: 22px 30px;
         margin-bottom: 30px;
-        box-shadow: 0 10px 35px rgba(0,0,0,0.6);
         text-align: right;
     }
-    .carbon-card { background: #000000; border: 2px solid #ffffff; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 12px; }
+    .carbon-card { background: #000000; border: 2px solid #ffffff; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 15px; }
     .card-value { font-size: 34px; font-weight: 900; font-family: 'Consolas', monospace; color: #00ff00; }
     .card-label { font-size: 14px; color: #ffffff; font-weight: bold; margin-top: 6px; }
     .trade-title { color: #ffffff; font-size: 20px; font-weight: 900; border-bottom: 2px solid #ffffff; padding-bottom: 10px; margin-bottom: 25px; text-align: right; }
@@ -55,7 +57,7 @@ st.markdown("""
     <div class='premium-header'>
         <div style='text-align: right;'>
             <span style='color: #ffffff; font-size: 26px; font-weight: 900;'>⚡ محطة تداول الإحصائية المشفرة | TADAWUL SECURE</span>
-            <p style='color: #ffffff; font-size: 14px; font-weight: bold; margin: 5px 0 0 0;'>منصة المسح الفني لـ 70 شركة قيادية سعودية - النسخة المحمية والمصلحة للتجاوب التام والانسيابي مع الجوال</p>
+            <p style='color: #ffffff; font-size: 14px; font-weight: bold; margin: 5px 0 0 0;'>منصة المسح الفني لـ 70 شركة قيادية سعودية - الإصدار الجديد الانسيابي الخالي من الفواصل</p>
         </div>
     </div>
 """, unsafe_allow_html=True)
@@ -233,15 +235,15 @@ if user_password == PASSWORD_SECRET:
         df_passed["الالنقاط الفنية"] = df_passed["الالنقاط الفنية"].apply(lambda x: f"{x}/8")
 
     market_sentiment = (buy_count / len(all_rows)) * 100 if all_rows else 0
-    # --- عرض العدادات الإحصائية عالية التباين (KPI Terminal Bar) ---
-    k_col1 = st.markdown(f"<div class='carbon-card'><div class='card-value' style='color: #ffffff;'>{len(all_rows)}</div><div class='card-label'>الأسهم المفحوصة والمطابقة</div></div>", unsafe_allow_html=True)
-    k_col2 = st.markdown(f"<div class='carbon-card' style='border-color: #ffffff;'><div class='card-value' style='color: #00ff00;'>{len(df_elite)}</div><div class='card-label'>🏆 صفقات النخبة الفائقة (7+)</div></div>", unsafe_allow_html=True)
-    k_col3 = st.markdown(f"<div class='carbon-card'><div class='card-value' style='color: #00ff00;'>{len(df_passed)}</div><div class='card-label'>إشارات الشراء العادية (4-6)</div></div>", unsafe_allow_html=True)
-    k_col4 = st.markdown(f"<div class='carbon-card'><div class='card-value' style='color: #00ff00;'>{market_sentiment:.1f}%</div><div class='card-label'>زخم تفاؤل السوق الحالي</div></div>", unsafe_allow_html=True)
+    # --- عرض العدادات الإحصائية بنظام عمودي انسيابي لمنع تداخل الحروف الحاد على الجوال ---
+    st.markdown(f"<div class='carbon-card'><div class='card-value' style='color: #ffffff;'>{len(all_rows)}</div><div class='card-label'>الأسهم المفحوصة والمطابقة</div></div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='carbon-card' style='border-color: #ffffff;'><div class='card-value' style='color: #00ff00;'>{len(df_elite)}</div><div class='card-label'>🏆 صفقات النخبة الفائقة (7+)</div></div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='carbon-card'><div class='card-value' style='color: #00ff00;'>{len(df_passed)}</div><div class='card-label'>إشارات الشراء العادية (4-6)</div></div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='carbon-card'><div class='card-value' style='color: #00ff00;'>{market_sentiment:.1f}%</div><div class='card-label'>زخم تفاؤل السوق الحالي</div></div>", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # --- الترتيب العمودي الانسيابي الخالص المانع للخط الفاص والارتداد على الجوال ---
+    # --- الترتيب الطولي المتسلسل المانع للخط الفاصل البشع على الجوال ---
     st.markdown("<div class='trade-title'>🏆 أولاً: صفقات النخبة الفائقة الذهبية (حسابات إدارة مخاطر المحفظة مدمجة آلياً)</div>", unsafe_allow_html=True)
     if not df_elite.empty:
         st.dataframe(df_elite[["رمز السهم", "اسم الشركة", "السعر الحالي", "وقف الخسارة", "الكمية المقترحة", "سيولة الصفقة", "الالنقاط الفنية", "التوصية النهائية"]], width="stretch", hide_index=True)
@@ -256,17 +258,18 @@ if user_password == PASSWORD_SECRET:
 
     st.markdown("<br><div class='trade-title'>📊 ثالثاً: مركز الرسوم البيانية المتزامنة ونبض الأسعار الحقيقية</div>", unsafe_allow_html=True)
     
-    # تحويل خيارات اختيار السهم والنموذج إلى عناصر متتالية طويلاً لتناسب مظهر شاشة الهاتف
     if all_rows:
         stock_map = {s['رمز السهم']: s['رمز السهم'] for s in all_rows}
-        selected_stock = st.selectbox("اختر رمز السهم المستهدف:", list(stock_map.keys()), format_func=lambda x: f"{x} - {next(s['اسم الشركة'] for s in all_rows if s['رمز السهم'] == x)}")
+        # إضافة مفتاح فريد لتأكيد كسر الكاش في صناديق الاختيار
+        selected_stock = st.selectbox("اختر رمز السهم المستهدف:", list(stock_map.keys()), format_func=lambda x: f"{x} - {next(s['اسم الشركة'] for s in all_rows if s['رمز السهم'] == x)}", key="selectbox_cache_breaker")
     else:
         selected_stock = None
         st.warning("لا توجد شركات مطابقة للبحث أو التصفية الحالية.")
 
     chart_type = st.selectbox(
         "نوع الرسم البياني الفني:",
-        ["الشموع اليابانية (Candlestick)", "هيكن آشي المفلتر (Heikin-Ashi)", "خطي (Line)", "مساحي (Area)"]
+        ["الشموع اليابانية (Candlestick)", "هيكن آشي المفلتر (Heikin-Ashi)", "خطي (Line)", "مساحي (Area)"],
+        key="chart_cache_breaker"
     )
 
     if selected_stock:
