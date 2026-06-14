@@ -6,16 +6,28 @@ import json
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-# 1. إعدادات الصفحة وهوية التداول الاحترافية فائقة الوضوح والتباين (Premium High-Contrast UI)
+# 1. إعدادات الصفحة وهوية التداول العالمية فائقة التجاوب مع الجوال (Mobile-Responsive UI)
 st.set_page_config(page_title="رادار تداول الكمي للمحترفين Pro", page_icon="⚡", layout="wide")
 
-# تثبيت كلمة المرور الخاصة بك (يمكنك تغيير '1234' إلى أي رقم سري تحبه لحماية منصتك)
 PASSWORD_SECRET = "1234"
 
-# حقن ستايل CSS المطور لإجبار المنصة والسايدبار على اللون الأسود الحاد والنصوص البيضاء الناصعة
+# حقن كود CSS مطور ومتقدم جداً لحل مشكلة الخط العمودي وضغط الحروف على شاشات الجوال
 st.markdown("""
     <style>
+    /* تغيير الخلفية العامة وتأكيد الخط العربي العريض الواضح */
     .stApp { background-color: #000000; color: #ffffff; font-family: 'Segoe UI', sans-serif; text-align: right; direction: rtl; }
+    
+    /* منع تداخل الحروف وحل مشكلة الخط في المنتصف على الجوال */
+    [data-testid="stHorizontalBlock"] {
+        flex-direction: column !important;
+    }
+    @media (min-width: 768px) {
+        [data-testid="stHorizontalBlock"] {
+            flex-direction: row-reverse !important;
+        }
+    }
+    
+    /* تحويل خلفية القائمة الجانبية بالكامل إلى الأسود الفاحم وإظهار خطوطها بالأبيض الحاد */
     section[data-testid="stSidebar"] { background-color: #000000 !important; border-left: 2px solid #ffffff !important; }
     section[data-testid="stSidebar"] * { color: #ffffff !important; font-weight: 900 !important; font-size: 16px !important; text-align: right !important; }
     
@@ -39,8 +51,9 @@ st.markdown("""
         padding: 22px 30px;
         margin-bottom: 30px;
         box-shadow: 0 10px 35px rgba(0,0,0,0.6);
+        text-align: right;
     }
-    .carbon-card { background: #000000; border: 2px solid #ffffff; border-radius: 12px; padding: 20px; text-align: center; }
+    .carbon-card { background: #000000; border: 2px solid #ffffff; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 10px; }
     .card-value { font-size: 34px; font-weight: 900; font-family: 'Consolas', monospace; color: #00ff00; }
     .card-label { font-size: 14px; color: #ffffff; font-weight: bold; margin-top: 6px; }
     .trade-title { color: #ffffff; font-size: 20px; font-weight: 900; border-bottom: 2px solid #ffffff; padding-bottom: 10px; margin-bottom: 20px; text-align: right; }
@@ -50,18 +63,13 @@ st.markdown("""
 
 st.markdown("""
     <div class='premium-header'>
-        <div style='display: flex; justify-content: space-between; align-items: center; flex-direction: row-reverse;'>
-            <div style='text-align: right;'>
-                <span style='color: #ffffff; font-size: 30px; font-weight: 900;'>⚡ محطة تداول الإحصائية المشفرة | TADAWUL TERMINAL SECURE</span>
-                <p style='color: #ffffff; font-size: 15px; font-weight: bold; margin: 5px 0 0 0;'>منصة المسح الفني لـ 70 شركة قيادية سعودية - النسخة المحمية من التلاعب والسرقة</p>
-            </div>
-            <div style='background: #000000; padding: 10px 20px; border-radius: 8px; font-size: 12px; color: #00ff00; font-weight: 900; border: 2px solid #ffffff;'>
-                نظام القفل البرمجي نشط
-            </div>
+        <div style='text-align: right;'>
+            <span style='color: #ffffff; font-size: 26px; font-weight: 900;'>⚡ محطة تداول الإحصائية المشفرة | TADAWUL SECURE</span>
+            <p style='color: #ffffff; font-size: 14px; font-weight: bold; margin: 5px 0 0 0;'>منصة المسح الفني لـ 70 شركة قيادية سعودية - النسخة المحمية والمحدثة للتجاوب التام مع الجوال</p>
         </div>
     </div>
 """, unsafe_allow_html=True)
-# دالة جلب البيانات لـ 70 شركة قيادية حقيقية ورسمية بالتصنيف الشرعي الصحيح
+# دالة جلب البيانات الموسعة لـ 70 شركة قيادية حقيقية ورسمية بالتصنيف الشرعي الصحيح
 @st.cache_data(ttl=600)
 def fetch_tradingview_saudi_market(rsi_l, pe_l):
     saudi_market_data = {
@@ -143,22 +151,19 @@ def fetch_tradingview_saudi_market(rsi_l, pe_l):
         })
     return rows
 
-# لوحة التحكم الجانبية الأمنية بالكامل
-st.sidebar.markdown("<h3 style='text-align: right; color: #ff0000;'>🔐 نظام القفل الأمني</h3>", unsafe_allow_html=True)
+# لوحة التحكم الجانبية بالكامل
+st.sidebar.markdown("<h3 style='text-align: right; color: #ffffff;'>⚙️ فلاتر الفرز الفني</h3>", unsafe_allow_html=True)
+halal_only = st.sidebar.checkbox("🕌 عرض الأسهم الحلال (النقية) فقط", value=False, key="halal_filter")
+rsi_limit = st.sidebar.slider("الحد الأقصى لمؤشر القوة النسبية RSI", 20, 70, 50)
+pe_limit = st.sidebar.slider("الحد الأقصى لمكرر الربحية P/E", 10, 45, 25)
+
+st.sidebar.markdown("<hr><h3 style='text-align: right; color: #00ff00;'>🧮 حاسبة مخاطر المحفظة</h3>", unsafe_allow_html=True)
+capital = st.sidebar.number_input("أدخل إجمالي رأس مال محفظتك (بالريال):", min_value=1000, value=50000, step=5000)
+risk_percent = st.sidebar.slider("نسبة المخاطرة المسموحة في الصفقة الواحدة (%):", 0.5, 5.0, 1.0, 0.5)
 user_password = st.sidebar.text_input("أدخل كلمة المرور لتفعيل المنصة:", type="password")
-# التحقق من كلمة المرور قبل فتح المنصة للمستخدم لحماية معادلاتك من السرقة والتلاعب
+# التحقق من كلمة المرور قبل فتح المنصة للمستخدم لحماية معادلاتك
 if user_password == PASSWORD_SECRET:
-    # لوحة التحكم الجانبية بالفلاتر الفنية والمالية (تظهر فقط بعد كتابة الرمز السري الصحيح)
-    st.sidebar.markdown("<hr><h3 style='text-align: right; color: #ffffff;'>⚙️ فلاتر الفرز الفني</h3>", unsafe_allow_html=True)
-    halal_only = st.sidebar.checkbox("🕌 عرض الأسهم الحلال (النقية) فقط", value=False, key="halal_filter")
-    rsi_limit = st.sidebar.slider("الحد الأقصى لمؤشر القوة النسبية RSI", 20, 70, 50)
-    pe_limit = st.sidebar.slider("الحد الأقصى لمكرر الربحية P/E", 10, 45, 25)
-
-    st.sidebar.markdown("<hr><h3 style='text-align: right; color: #00ff00;'>🧮 حاسبة مخاطر المحفظة</h3>", unsafe_allow_html=True)
-    capital = st.sidebar.number_input("أدخل إجمالي رأس مال محفظتك (بالريال):", min_value=1000, value=50000, step=5000)
-    risk_percent = st.sidebar.slider("نسبة المخاطرة المسموحة في الصفقة الواحدة (%):", 0.5, 5.0, 1.0, 0.5)
-
-    # 2. جلب معالجة وتحديث البيانات الحية لـ 70 شركة من كبار عمالقة السوق
+    # 2. جلب معالجة وتحديث البيانات الحية لـ 70 شركة من كبار عمالقة السوق (8/8 تحاليل كاملة)
     live_data = fetch_tradingview_saudi_market(rsi_limit, pe_limit)
 
     # --- خانة البحث الذكية المزدوجة بالرمز والاسم ---
@@ -170,7 +175,7 @@ if user_password == PASSWORD_SECRET:
     passed_rows = []
     buy_count = 0
 
-    # حساب مبلغ المخاطرة الإجمالي بالريال بناءً على مدخلات حاسبة المخاطر الجانبية
+    # حساب مبلغ المخاطرة الإجمالي بالريال بناءً على مدخلات حاسبة المخاطر
     risk_cash = capital * (risk_percent / 100.0)
 
     for stock in live_data:
@@ -181,11 +186,14 @@ if user_password == PASSWORD_SECRET:
             if search_query not in stock['symbol'] and search_query not in stock['name']:
                 continue
                 
+            search_query_lower = search_query.lower()
+            if search_query_lower not in stock['symbol'].lower() and search_query_lower not in stock['name'].lower():
+                continue
+                
         price_val = stock['price']
         sl_val = stock['sl']
         per_share_risk = price_val - sl_val
         
-        # حساب كمية الأسهم الدقيقة والسيولة المطلوبة بناءً على وقف الخسارة الحقيقي وحجم محفظتك
         if per_share_risk > 0:
             suggested_qty = int(risk_cash / per_share_risk)
             suggested_qty = max(suggested_qty, 0)
@@ -220,7 +228,7 @@ if user_password == PASSWORD_SECRET:
             passed_rows.append(stock_entry)
             buy_count += 1
 
-    # تحويل القوائم المعالجة إلى جداول بيانات لترتيبها
+    # تحويل القوائم المعالجة إلى جداول بيانات
     df_all = pd.DataFrame(all_rows) if all_rows else pd.DataFrame()
     df_elite = pd.DataFrame(elite_rows) if elite_rows else pd.DataFrame()
     df_passed = pd.DataFrame(passed_rows) if passed_rows else pd.DataFrame()
@@ -255,13 +263,13 @@ if user_password == PASSWORD_SECRET:
     col_left, col_right = st.columns([0.58, 0.42])
 
     with col_left:
-        st.markdown("<div class='trade-title'>🏆 أولاً: صفقات النخبة الفائقة الذهبية (إشارات حية متكاملة 7/8 فأعلى)</div>", unsafe_allow_html=True)
+        st.markdown("<div class='trade-title'>🏆 أولاً: صفقات النخبة الفائقة الذهبية (حسابات إدارة مخاطر المحفظة مدمجة آلياً)</div>", unsafe_allow_html=True)
         if not df_elite.empty:
             st.dataframe(df_elite[["رمز السهم", "اسم الشركة", "السعر الحالي", "وقف الخسارة", "الكمية المقترحة", "سيولة الصفقة", "الالنقاط الفنية", "التوصية النهائية"]], width="stretch", hide_index=True)
         else:
             st.info("لا توجد أسهم حالياً حققت نقاط النخبة الصارمة كاملة. خفف فلاتر مؤشر RSI والـ P/E من الجانب.")
 
-        st.markdown("<br><div class='trade-title'>🔥 ثانياً: شركات في نطاق الشراء والمراقبة العادية (من 4 إلى 6 نقاط)</div>", unsafe_allow_html=True)
+        st.markdown("<br><div class='trade-title'>🔥 ثانياً: شركات في نطاق الشراء والمراقبة العادية (مع تحديد حجم الكمية لكل سهم)</div>", unsafe_allow_html=True)
         if not df_passed.empty:
             st.dataframe(df_passed[["رمز السهم", "اسم الشركة", "السعر الحالي", "وقف الخسارة", "الكمية المقترحة", "سيولة الصفقة", "الالنقاط الفنية", "التوصية النهائية"]], width="stretch", hide_index=True)
         else:
@@ -274,7 +282,6 @@ if user_password == PASSWORD_SECRET:
         with sub_col1:
             if all_rows:
                 stock_map = {s['رمز السهم']: s['رمز السهم'] for s in all_rows}
-                # تم الإصلاح الجذري لقراءة أسماء الشركات والرموز بوضوح كامل بخلفية رمادية غامقة ونصوص بيضاء عريضة جداً
                 selected_stock = st.selectbox("اختر رمز السهم المستهدف:", list(stock_map.keys()), format_func=lambda x: f"{x} - {next(s['اسم الشركة'] for s in all_rows if s['رمز السهم'] == x)}")
             else:
                 selected_stock = None
@@ -337,5 +344,4 @@ if user_password == PASSWORD_SECRET:
     if not df_all.empty:
         st.dataframe(df_all[["رمز السهم", "اسم الشركة", "التصنيف الشرعي", "السعر الحالي", "مؤشر RSI", "فيبوناتشي", "التوصية النهائية"]], width="stretch", hide_index=True)
 else:
-    # رسالة أمنية ناصعة تظهر في حال عدم كتابة الرقم السري المالي الصحيح لمنع التجسس
     st.warning("🔒 يرجى إدخال كلمة المرور الصحيحة في القائمة الجانبية لفك تشفير وعرض بيانات الرادار الاستثماري.")
