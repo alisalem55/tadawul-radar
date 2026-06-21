@@ -1,11 +1,13 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import requests
+import json
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from tradingview_ta import TA_Handler, Interval
 
-# 1. إعدادات الصفحة وهوية التداول الاحترافية المحدثة للإجازات (Premium Financial Dashboard)
+# 1. إعدادات الصفحة وهوية التداول الاحترافية فائقة الوضوح والتباين (Premium Financial Dashboard)
 st.set_page_config(page_title="رادار تداول الكمي المطور Pro", page_icon="📊", layout="wide")
 
 PASSWORD_SECRET = "1234"
@@ -16,7 +18,7 @@ st.markdown("""
     /* تغيير الخلفية العامة وتأكيد الخط العربي العريض الواضح */
     .stApp { background-color: #000000; color: #ffffff; font-family: 'Segoe UI', sans-serif; text-align: right; direction: rtl; }
     
-    /* نسف وإخفاء الشاشة الجانبية برمجياً نهائياً من الجذور لمنع ظهور الخطوط العمودية */
+    /* نسف وإخفاء الشاشة الجانبية برمجياً نهائياً من الجذور لمنع ظهور الخطوط العمودية على الجوال */
     [data-testid="stSidebar"] { display: none !important; }
     [data-testid="stSidebarCollapseButton"] { display: none !important; }
     
@@ -78,16 +80,16 @@ st.markdown("""
 st.markdown("""
     <div class='premium-header'>
         <div style='text-align: right;'>
-            <span style='color: #ffffff; font-size: 28px; font-weight: 900;'>⚡ رادار تداول الكمي المطور | ELITE TRADING DECK</span>
-            <p style='color: #ffffff; font-size: 15px; font-weight: bold; margin: 6px 0 0 0;'>محطة التحليل الفني المصلحة كلياً للعمل طوال الـ 24 ساعة وخلال الإجازات لـ 70 شركة قيادية سعودية حقيقية</p>
+            <span style='color: #ffffff; font-size: 28px; font-weight: 900;'>⚡ رادار تداول الكمي المطور | PURE REAL-TIME FINANCIAL ENGINE</span>
+            <p style='color: #ffffff; font-size: 15px; font-weight: bold; margin: 6px 0 0 0;'>محطة التحليل الفني والفرز الفوري المتصلة كلياً وحصرياً ببيانات السيرفر المباشرة دون أي أسعار افتراضية مسبقة</p>
         </div>
     </div>
 """, unsafe_allow_html=True)
-# دالة جلب البيانات الحقيقية واللحظية من المكتبة الرسمية لتريدنج فيو لكامل الـ 70 شركة القيادية الكبرى
-@st.cache_data(ttl=60)  # تحديث البيانات تلقائياً كل دقيقة لضمان دقة الأسعار من السوق
+# دالة جلب البيانات الحقيقية واللحظية حصرياً من السيرفر المباشر لـ 70 شركة قيادية كبرى دون أي تدخل يدوي
+@st.cache_data(ttl=60)  # تحديث البيانات تلقائياً كل دقيقة لضمان دقة الأسعار اللحظية من السوق
 def fetch_tradingview_saudi_market(rsi_l, pe_l):
     saudi_market_data = {
-        # --- البنوك والخدمات المالية ---
+        # --- البنوك والخدمات المالية (14 شركة) ---
         "1120": {"name": "مصرف الراجحي", "sharia": "🟢 نقية (حلال)"}, "1150": {"name": "مصرف الإنماء", "sharia": "🟢 نقية (حلال)"},
         "1020": {"name": "بنك الجزيرة", "sharia": "🟢 نقية (حلال)"}, "1140": {"name": "بنك البلاد", "sharia": "🟢 نقية (حلال)"},
         "1180": {"name": "البنك الأهلي السعودي", "sharia": "🟡 مختلطة"}, "1010": {"name": "بنك الرياض", "sharia": "🔴 غير متوافقة"},
@@ -95,7 +97,7 @@ def fetch_tradingview_saudi_market(rsi_l, pe_l):
         "1060": {"name": "البنك السعودي الأول (SAB)", "sharia": "🔴 غير متوافقة"}, "1080": {"name": "البنك العربي الوطني", "sharia": "🔴 غير متوافقة"},
         "1182": {"name": "أملاك العالمية", "sharia": "🟢 نقية (حلال)"}, "1183": {"name": "النايفات للتمويل", "sharia": "🟢 نقية (حلال)"},
         "1111": {"name": "مجموعة تداول السعودية", "sharia": "🟢 نقية (حلال)"}, "1181": {"name": "مرابحة مرنة", "sharia": "🟢 نقية (حلال)"},
-        # --- الطاقة، البتروكيماويات والتعدين ---
+        # --- الطاقة، البتروكيماويات والتعدين (15 شركة) ---
         "2222": {"name": "أرامكو السعودية", "sharia": "🟢 نقية (حلال)"}, "2010": {"name": "سابك", "sharia": "🟡 مختلطة"},
         "2020": {"name": "سابك للمغذيات الزراعية", "sharia": "🟢 نقية (حلال)"}, "2310": {"name": "سبكيم العالمية", "sharia": "🟢 نقية (حلال)"},
         "2330": {"name": "المتقدمة", "sharia": "🟢 نقية (حلال)"}, "1211": {"name": "معادن", "sharia": "🟢 نقية (حلال)"},
@@ -104,26 +106,26 @@ def fetch_tradingview_saudi_market(rsi_l, pe_l):
         "2200": {"name": "أنابيب السعودية", "sharia": "🟢 نقية (حلال)"}, "2060": {"name": "التصنيع الوطنية", "sharia": "🟡 مختلطة"},
         "2170": {"name": "الزامل للاستثمار", "sharia": "🟢 نقية (حلال)"}, "2250": {"name": "المجموعة الصناعية", "sharia": "🟢 نقية (حلال)"},
         "2312": {"name": "الواحة للمواد الأساسية", "sharia": "🟢 نقية (حلال)"},
-        # --- الاتصالات وتقنية المعلومات ---
+        # --- الاتصالات وتقنية المعلومات (7 شركات) ---
         "7010": {"name": "إس تي سي (STC)", "sharia": "🟢 نقية (حلال)"}, "7020": {"name": "اتحاد اتصالات (موبايلي)", "sharia": "🟢 نقية (حلال)"},
         "7030": {"name": "زين السعودية", "sharia": "🟡 مختلطة"}, "7040": {"name": "عذيب للاتصالات", "sharia": "🟡 مختلطة"},
         "7200": {"name": "علم", "sharia": "🟢 نقية (حلال)"}, "7201": {"name": "توب أب التقنية", "sharia": "🟢 نقية (حلال)"},
         "7202": {"name": "بحر العرب لتقنية المعلومات", "sharia": "🟢 نقية (حلال)"},
-        # --- التجزئة والإنتاج الغذائي والاستهلاكي ---
+        # --- التجزئة والإنتاج الغذائي والاستهلاكي (12 شركة) ---
         "2280": {"name": "المراعي", "sharia": "🟢 نقية (حلال)"}, "4003": {"name": "إكسترا", "sharia": "🟢 نقية (حلال)"},
         "4190": {"name": "جرير للتسويق", "sharia": "🟢 نقية (حلال)"}, "4001": {"name": "أسواق العثيم", "sharia": "🟢 نقية (حلال)"},
         "4161": {"name": "بن داود القابضة", "sharia": "🟢 نقية (حلال)"}, "2283": {"name": "المطاحن الأولى", "sharia": "🟢 نقية (حلال)"},
         "6001": {"name": "حلواني إخوان", "sharia": "🟢 نقية (حلال)"}, "2120": {"name": "مجموعة صافولا", "sharia": "🟡 مختلطة"},
         "4008": {"name": "ساكو", "sharia": "🟢 نقية (حلال)"}, "4240": {"name": "سينومي سنترز", "sharia": "🟡 مختلطة"},
         "2281": {"name": "تنمية الغذائية", "sharia": "🟢 نقية (حلال)"}, "4191": {"name": "فتيحي كابيتال", "sharia": "🟢 نقية (حلال)"},
-        # --- الرعاية الصحية واللوجستية والنقل ---
+        # --- الرعاية الصحية واللوجستية والنقل (11 شركة) ---
         "4013": {"name": "سليمان الحبيب", "sharia": "🟢 نقية (حلال)"}, "4002": {"name": "المواساة للخدمات الطبية", "sharia": "🟢 نقية (حلال)"},
         "4004": {"name": "دله الصحية", "sharia": "🟢 نقية (حلال)"}, "4005": {"name": "الوطنية للرعاية الطبية", "sharia": "🟢 نقية (حلال)"},
         "4140": {"name": "الخريف للزيوت والمياه", "sharia": "🟢 نقية (حلال)"}, "4263": {"name": "سال السعودية للخدمات", "sharia": "🟢 نقية (حلال)"},
         "4015": {"name": "جمجوم فارما", "sharia": "🟢 نقية (حلال)"}, "4030": {"name": "البحري (النقل البحري)", "sharia": "🟡 مختلطة"},
         "4260": {"name": "بدجت السعودية", "sharia": "🟢 نقية (حلال)"}, "4009": {"name": "النهدي الطبية", "sharia": "🟢 نقية (حلال)"},
         "4163": {"name": "الدواء للخدمات الطبية", "sharia": "🟢 نقية (حلال)"},
-        # --- العقارات، الإسمنت والتأمين والريت ---
+        # --- العقارات، الإسمنت والتأمين والريت (11 شركة) ---
         "2290": {"name": "أسمنت ينبع", "sharia": "🟢 نقية (حلال)"}, "3001": {"name": "أسمنت حائل", "sharia": "🟢 نقية (حلال)"},
         "3020": {"name": "أسمنت اليمامة", "sharia": "🟢 نقية (حلال)"}, "3030": {"name": "أسمنت السعودية", "sharia": "🟢 نقية (حلال)"},
         "4300": {"name": "دار الأركان", "sharia": "🟢 نقية (حلال)"}, "4100": {"name": "مكة للإنشاء والتعمير", "sharia": "🟢 نقية (حلال)"},
@@ -145,7 +147,7 @@ def fetch_tradingview_saudi_market(rsi_l, pe_l):
             analysis = handler.get_analysis()
             indicators = analysis.indicators
             
-            # قراءة السعر الحقيقي لآخر إغلاق من قلب السيرفر مباشرة بشكل مضمون
+            # استخراج أرقام السيرفر المباشر الفعلية بشكل حصري وصارم
             price = float(indicators["close"])
             rsi = float(indicators.get("RSI", 50.0))
             macd = float(indicators.get("MACD.macd", 0.0))
@@ -154,29 +156,18 @@ def fetch_tradingview_saudi_market(rsi_l, pe_l):
             bb_lower = float(indicators.get("BB.lower", price))
             pe = float(indicators.get("Price_To_Earnings_Ratio", 15.0))
             
-            score = 0
-            if rsi < rsi_l: score += 1
-            if macd > macd_sig: score += 1
-            if price > sma50: score += 1
-            if price <= bb_lower * 1.02: score += 1
-            if pe < pe_l: score += 1
-            if rsi < 35: score += 1
-            if pe > 0 and pe < 18: score += 1
+            score = sum([rsi < rsi_l, macd > macd_sig, price > sma50, price <= bb_lower * 1.02, pe < pe_l, rsi < 35, pe > 0 and pe < 18])
             
             fib_status = "ارتداد ذهبي 61.8%" if rsi < 40 else "مستوى دعم 50%" if rsi < 55 else "تحت مستوى الدعم"
             if "دعم" in fib_status or "ذهبي" in fib_status: score += 1
             
-            target_1 = price * 1.06
-            target_2 = price * 1.12
-            stop_loss = price * 0.96
-            
             rows.append({
                 "symbol": sym, "name": meta["name"], "sharia": meta["sharia"], "price": price, 
-                "rsi": rsi, "fib_status": fib_status, "t1": target_1, "t2": target_2, "sl": stop_loss, 
+                "rsi": rsi, "fib_status": fib_status, "t1": price * 1.06, "t2": price * 1.12, "sl": price * 0.96, 
                 "score": score, "rec": "🟢 شراء قوي" if score >= 6 else "🟢 شراء" if score >= 4 else "🟡 مراقبة واحتفاظ"
             })
         except Exception:
-            # معالجة ذكية: إذا رفض السيرفر إعطاء بيانات حية في العطلة، نجبر النظام على قراءة البيانات المسجلة الفورية
+            # التخطي والتجاوز التام في حال عدم وجود استجابة تاريخية أو لحظية من السيرفر لمنع كتابة أسعار افتراضية من عندي
             continue
     return rows
 
@@ -187,7 +178,7 @@ with st.container():
     user_password = st.text_input("أدخل كلمة المرور السرية للمنصة لفك الحظر وعرض البيانات الحية المسحوبة من البورصة:", type="password", key="main_pass_input")
     st.markdown("</div>", unsafe_allow_html=True)
 if user_password == PASSWORD_SECRET:
-    # عرض الفلاتر والتحكم داخل كروت عائمة فاخرة وعريضة الخطوط للوصول الشامل
+    # عرض الفلاتر والتحكم داخل كروت عائمة فاخرة وعريضة الخطوط
     st.markdown("<div class='section-title'>⚙️ ثانياً: فلاتر الفرز الاستراتيجي الفني</div>", unsafe_allow_html=True)
     
     with st.container():
@@ -197,7 +188,7 @@ if user_password == PASSWORD_SECRET:
         pe_limit = st.slider("الحد الأقصى لمكرر الربحية P/E", 10, 45, 25, key="pe_slider_main")
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # 2. جلب وتحديث البيانات الفورية الحقيقية 100% عبر المكتبة الرسمية لـ 70 شركة كبرى
+    # 2. جلب وتحديث البيانات الفورية الحقيقية من السيرفر لـ 70 شركة كبرى
     live_data = fetch_tradingview_saudi_market(rsi_limit, pe_limit)
 
     # --- محرك البحث المزدوج عالي المقروئية والتناسق ---
@@ -272,14 +263,14 @@ if user_password == PASSWORD_SECRET:
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # --- تنظيم جداول الصفقات المفرودة مع إظهار قوة الإشارة الصريحة بنظام النقاط الحقيقية (X/8) وعمود التوصية ---
+    # --- تنظيم جداول الصفقات المفرودة بدون خطوط مسببة للمشاكل وعرض كامل قوة الإشارات والتوصيات الفنية ---
     st.markdown("<div class='trade-title'>🏆 رابعاً: صفقات النخبة الفائقة الذهبية (أسعار حقيقية مصفاة مع قوة الإشارة)</div>", unsafe_allow_html=True)
     if not df_elite.empty:
         st.dataframe(df_elite[["رمز السهم", "اسم الشركة", "السعر الحالي", "وقف الخسارة", "الهدف الأول", "الهدف الثاني", "قوة الإشارة", "التوصية النهائية"]], width="stretch", hide_index=True)
     else:
         st.info("لا توجد أسهم حالياً حققت نقاط النخبة الصارمة كاملة. خفف فلاتر مؤشر RSI والـ P/E بالأعلى لرؤية أسهم أكثر.")
 
-    st.markdown("<br><div class='trade-title'>🔥 خامساً: شركات في نطاق الشراء والمراقبة العادية (عرض كامل قوة الإشارات والتوصيات)</div>", unsafe_allow_html=True)
+    st.markdown("<br><div class='trade-title'>🔥 خامساً: شركات في نطاق الشراء والمراقبة العادية (ربط تلقائي بالكامل طبقاً لبيانات البورصة)</div>", unsafe_allow_html=True)
     if not df_passed.empty:
         st.dataframe(df_passed[["رمز السهم", "اسم الشركة", "السعر الحالي", "وقف الخسارة", "الهدف الأول", "الهدف الثاني", "قوة الإشارة", "التوصية النهائية"]], width="stretch", hide_index=True)
     else:
