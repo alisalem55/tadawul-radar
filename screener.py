@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import requests
+import json
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from tradingview_ta import TA_Handler, Interval
@@ -13,28 +15,63 @@ PASSWORD_SECRET = "1234"
 # حقن ستايل CSS المطور بأعلى درجات التباين والوضوح (نصوص بيضاء ناصعة على خلفيات سوداء كاحلة)
 st.markdown("""
     <style>
+    /* تغيير الخلفية العامة وتأكيد الخط العربي العريض الواضح */
     .stApp { background-color: #000000; color: #ffffff; font-family: 'Segoe UI', sans-serif; text-align: right; direction: rtl; }
+    
+    /* نسف وإخفاء الشاشة الجانبية برمجياً نهائياً من الجذور لمنع ظهور الخطوط العمودية */
     [data-testid="stSidebar"] { display: none !important; }
     [data-testid="stSidebarCollapseButton"] { display: none !important; }
+    
+    /* إلغاء حاويات التقسيم الأفقي لمنع انضغاط الحروف وتداخلها على الهاتف والجوال */
     div[data-testid="stHorizontalBlock"] { flex-direction: column !important; display: block !important; width: 100% !important; margin: 0px !important; padding: 0px !important; gap: 0px !important; }
     div[data-testid="column"] { width: 100% !important; max-width: 100% !important; display: block !important; margin-bottom: 20px !important; padding: 0px !important; }
     
+    /* تصميم الترويسة العليا المحددة بإطار أبيض نقرأه بوضوح أسطوري */
     .premium-header {
-        background-color: #000000; border: 2px solid #ffffff; border-radius: 12px; padding: 24px 30px; margin-bottom: 30px; text-align: right;
+        background-color: #000000;
+        border: 2px solid #ffffff;
+        border-radius: 12px;
+        padding: 24px 30px;
+        margin-bottom: 30px;
+        text-align: right;
     }
-    .control-card { background-color: #000000 !important; border: 2px solid #ffffff !important; border-radius: 12px !important; padding: 22px !important; margin-bottom: 25px !important; }
-    .carbon-card { background: #000000; border: 2px solid #ffffff; border-radius: 12px; padding: 22px; text-align: center; margin-bottom: 15px; }
+    
+    /* كروت عائمة فاخرة وعريضة لعناصر التحكم وحاسبة المخاطر */
+    .control-card {
+        background-color: #000000 !important;
+        border: 2px solid #ffffff !important;
+        border-radius: 12px !important;
+        padding: 22px !important;
+        margin-bottom: 25px !important;
+    }
+    
+    /* بطاقات الأداء الرقمي المتناسقة بالقمة بخلفية سوداء وإطار ناصع */
+    .carbon-card {
+        background: #000000;
+        border: 2px solid #ffffff;
+        border-radius: 12px;
+        padding: 22px;
+        text-align: center;
+        margin-bottom: 15px;
+    }
     .card-value { font-size: 34px; font-weight: 900; font-family: 'Consolas', monospace; color: #00ff00; }
     .card-label { font-size: 14px; color: #ffffff; font-weight: bold; margin-top: 6px; }
     
+    /* التعديل الجذري للصناديق المنسدلة: نص أبيض عريض وخلفية سوداء متباينة جداً */
     div[data-baseweb="select"] { background-color: #000000 !important; border: 2px solid #ffffff !important; border-radius: 8px; padding: 6px; }
     div[data-baseweb="select"] * { color: #ffffff !important; font-weight: 900 !important; font-size: 18px !important; }
+    
     div[role="listbox"] { background-color: #000000 !important; border: 2px solid #ffffff !important; }
     div[role="listbox"] li { color: #ffffff !important; font-weight: 900 !important; font-size: 16px !important; background-color: #000000 !important; padding: 12px !important; border-bottom: 1px solid #1f293d; text-align: right !important; }
     div[role="listbox"] li:hover { background-color: #1f293d !important; color: #00ff00 !important; }
     
+    /* مدخلات خانة البحث والأرقام بيضاء عريضة وخلفية سوداء كاحلة للوضوح الأقصى والمقروئية */
     .stTextInput input, .stNumberInput input { color: #ffffff !important; background-color: #000000 !important; border: 2px solid #ffffff !important; font-size: 16px !important; font-weight: 900 !important; text-align: right !important; }
+    .stTextInput input:focus, .stNumberInput input:focus { border-color: #00ff00 !important; }
+    
     label { color: #ffffff !important; font-weight: 900 !important; font-size: 16px !important; text-align: right !important; display: block; margin-bottom: 8px; }
+    
+    /* ستايل عناوين الأقسام الرئيسية باللون الذهبي الملكي الواضح والمفرود */
     .trade-title { color: #ffcc00; font-size: 21px; font-weight: 900; border-bottom: 2px solid #ffffff; padding-bottom: 12px; margin-bottom: 25px; text-align: right; }
     .section-title { color: #ffffff; font-size: 20px; font-weight: 900; padding: 5px 12px; border-right: 4px solid #ffcc00; margin-bottom: 22px; text-align: right; }
     </style>
@@ -43,8 +80,8 @@ st.markdown("""
 st.markdown("""
     <div class='premium-header'>
         <div style='text-align: right;'>
-            <span style='color: #ffffff; font-size: 28px; font-weight: 900;'>⚡ رادار تداول الكمي المطور | PURE LIVE DATA</span>
-            <p style='color: #ffffff; font-size: 15px; font-weight: bold; margin: 6px 0 0 0;'>محطة التحليل الفني بالأسعار الحقيقية التلقائية المستخرجة من البورصة مباشرة بدون أي أسعار افتراضية</p>
+            <span style='color: #ffffff; font-size: 28px; font-weight: 900;'>⚡ رادار تداول الكمي المطور | ELITE TRADING DECK</span>
+            <p style='color: #ffffff; font-size: 15px; font-weight: bold; margin: 6px 0 0 0;'>محطة التحليل المفرزة والمصلحة كلياً من الأخطاء التخطيطية لـ 70 شركة قيادية سعودية حقيقية</p>
         </div>
     </div>
 """, unsafe_allow_html=True)
@@ -110,7 +147,7 @@ def fetch_tradingview_saudi_market(rsi_l, pe_l):
             analysis = handler.get_analysis()
             indicators = analysis.indicators
             
-            # جلب السعر الحقيقي الخالص المسجل بالسيرفر فقط بدون فرض أي رقم بديل
+            # جلب السعر الخالص من السيرفر مباشرة دون أي فرض لرقم مسبق من عندي
             price = float(indicators["close"])
             rsi = float(indicators.get("RSI", 50.0))
             macd = float(indicators.get("MACD.macd", 0.0))
@@ -141,7 +178,7 @@ def fetch_tradingview_saudi_market(rsi_l, pe_l):
                 "score": score, "rec": "🟢 شراء قوي" if score >= 6 else "🟢 شراء" if score >= 4 else "🟡 مراقبة واحتفاظ"
             })
         except Exception:
-            # تخطي وتأجيل أي شركة يتعذر جلب سعرها الحقيقي من السيرفر لمنع الأخطاء والأسعار العشوائية
+            # تخطي وتأجيل أي شركة يتعذر جلب سعرها الحقيقي لمنع الأخطاء والأسعار الافتراضية العشوائية
             continue
     return rows
 
@@ -162,7 +199,7 @@ if user_password == PASSWORD_SECRET:
         pe_limit = st.slider("الحد الأقصى لمكرر الربحية P/E", 10, 45, 25, key="pe_slider_main")
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # 2. جلب وتحديث البيانات الفورية الحقيقية 100% عبر المكتبة الرسمية لـ 70 شركة كبرى
+    # 2. جلب وتحديث البيانات الفورية الحقيقية 100% حصرياً من السيرفر لـ 70 شركة كبرى
     live_data = fetch_tradingview_saudi_market(rsi_limit, pe_limit)
 
     # --- محرك البحث المزدوج عالي المقروئية والتناسق ---
